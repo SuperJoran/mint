@@ -20,6 +20,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Predicate;
@@ -44,12 +45,12 @@ public class CsvServiceImpl implements CsvService {
         this.bankAccountService = bankAccountService;
     }
 
-    private static final Map<Bank, Options> SUPPORTED_BANKS_OPTIONS = new HashMap<>();
+    private static final Map<Bank, Options> SUPPORTED_BANKS_OPTIONS = new EnumMap<>(Bank.class);
 
     static {
-        SUPPORTED_BANKS_OPTIONS.put(Bank.KEYTRADE, new Options(";", s -> s.endsWith("EUR"), "dd.MM.yyyy", 5, 1, 3, 4));
-        SUPPORTED_BANKS_OPTIONS.put(Bank.BELFIUS, new Options(";", s -> s.startsWith("BE"), "dd/MM/yyyy", 10, 1, 4, 8));
-        SUPPORTED_BANKS_OPTIONS.put(Bank.ING, new Options(";", s -> Character.isDigit(s.charAt(0)), "dd/MM/yyyy", 6, 4, 2, 8));
+        SUPPORTED_BANKS_OPTIONS.put(Bank.KEYTRADE, new Options(";", s -> s.endsWith("EUR"), "dd.MM.yyyy", 5, 1, -1, 3, 4));
+        SUPPORTED_BANKS_OPTIONS.put(Bank.BELFIUS, new Options(";", s -> s.startsWith("BE"), "dd/MM/yyyy", 10, 1, 0, 4, 8));
+        SUPPORTED_BANKS_OPTIONS.put(Bank.ING, new Options(";", s -> Character.isDigit(s.charAt(0)), "dd/MM/yyyy", 6, 4, 0, 2, 8));
     }
 
     public Bank identifyBankAccount(String fileUrl, Person person) {
@@ -125,15 +126,15 @@ public class CsvServiceImpl implements CsvService {
     }
 
     private static class Options {
-        private String cvsSplitBy = ";";
-        private Predicate<String> identifyStatementPredicate = s -> s.endsWith("EUR");
-        private String datePattern = "dd.MM.yyyy";
+        private final String cvsSplitBy;
+        private final Predicate<String> identifyStatementPredicate;
+        private final String datePattern;
 
-        private int rowNumberAmount = 5;
-        private int rowNumberDate = 1;
-        private int rowNumberFromAccount = 0;
-        private int rowNumberToAccount = 3;
-        private int rowNumberDescription = 4;
+        private final int rowNumberAmount;
+        private final int rowNumberDate;
+        private final int rowNumberFromAccount;
+        private final int rowNumberToAccount;
+        private final int rowNumberDescription;
 
         Options(
                 String cvsSplitBy,
@@ -141,6 +142,7 @@ public class CsvServiceImpl implements CsvService {
                 String datePattern,
                 int rowNumberAmount,
                 int rowNumberDate,
+                int rowNumberFromAccount,
                 int rowNumberToAccount,
                 int rowNumberDescription
         ) {
@@ -151,6 +153,7 @@ public class CsvServiceImpl implements CsvService {
             this.rowNumberDate = rowNumberDate;
             this.rowNumberToAccount = rowNumberToAccount;
             this.rowNumberDescription = rowNumberDescription;
+            this.rowNumberFromAccount = rowNumberFromAccount;
         }
     }
 }
