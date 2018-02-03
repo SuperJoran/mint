@@ -1,0 +1,18 @@
+Boekingsdatum vanaf;01/01/2017
+Boekingsdatum tot en met;31/12/2017
+Bedrag vanaf;
+Bedrag tot en met;
+Afschriftnummer vanaf;
+Afschriftnummer tot en met;
+Mededeling;
+Naam tegenpartij bevat;
+Rekening tegenpartij;
+Laatste saldo;32,12 EUR
+Datum/uur van het laatste saldo;02/05/2018 18:35:57
+;
+Rekening;Boekingsdatum;Afschriftnummer;Transactienummer;Rekening tegenpartij;Naam tegenpartij bevat;Straat en nummer;Postcode en plaats;Transactie;Valutadatum;Bedrag;Devies;BIC;Landcode;Mededelingen
+BE08 0321 0249 2813;12/12/2017;00019;34;BE72 1234 1056 7316;TEST PERSOON 1;STATIONSSTRAAT           1;9100  SINT-NIKLAAS;STORTING VAN BE72 1234 1056 7316 TEST PERSOON 1      Terugbetaling kapper 7/12                              REF. : 09018786CA232 VAL. 13-12;13/12/2017;21,00;EUR;GKCCBEBB;BE;Terugbetaling kapper 7/12
+BE08 0321 0249 2813;09/12/2017;00018;33;BE72 1234 1056 7316;TEST PERSOON 1;STATIONSSTRAAT           1;9100  SINT-NIKLAAS;STORTING VAN BE72 1234 1056 7316 TEST PERSOON 1      Terugbetaling NMBS-abonnement 6/12                     REF. : 09018230C8444 VAL. 10-12;10/12/2017;47,50;EUR;GKCCBEBB;BE;Terugbetaling NMBS-abonnement 6/12
+BE08 0321 0249 2813;09/12/2017;00018;32;BE72 1234 1056 7316;TEST PERSOON 1;STATIONSSTRAAT           1;9100  SINT-NIKLAAS;STORTING VAN BE72 1234 1056 7316 TEST PERSOON 1      Terugbetaling kledij  21/11              REF. : 09018230C8447 VAL. 10-12;10/12/2017;69,90;EUR;GKCCBEBB;BE;Terugbetaling kledij 21/11
+BE08 0321 0249 2813;08/12/2017;00018;31;BE57 9874 1777 9035;TEST PERSOON 2;;;OVERSCHRIJVING DEXIA DIRECT MOBILE NAAR                BE57 9874 1777 9035 TEST PERSOON 2                    REF. : 09054194C8001 VAL. 08-12;08/12/2017;-10,00;EUR;GKCCBEBB;;
+BE08 0321 0249 2813;08/12/2017;00018;30;BE57 9874 1777 9035;TEST PERSOON 2;;;OVERSCHRIJVING DEXIA DIRECT MOBILE NAAR                BE57 9874 1777 9035 TEST PERSOON 2                    REF. : 09054570C8001 VAL. 08-12;08/12/2017;-20,00;EUR;GKCCBEBB;;
