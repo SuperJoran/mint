@@ -21,8 +21,8 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.EnumMap;
-import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.function.Predicate;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -53,9 +53,31 @@ public class CsvServiceImpl implements CsvService {
         SUPPORTED_BANKS_OPTIONS.put(Bank.ING, new Options(";", s -> Character.isDigit(s.charAt(0)), "dd/MM/yyyy", 6, 4, 0, 2, 8));
     }
 
+    @Override
     public Bank identifyBankAccount(String fileUrl, Person person) {
+        Map<String, BankAccount> bankAccountMap = this.bankAccountService.findByAdministrator(person)
+                .stream()
+                .collect(Collectors.toConcurrentMap(BankAccount::getNumber, b -> b));
 
-        return Bank.BELFIUS;
+        return SUPPORTED_BANKS_OPTIONS.entrySet().stream()
+                .filter(entry -> {
+                    String line;
+                    try (BufferedReader br = new BufferedReader(new FileReader(fileUrl))) {
+                        while ((line = br.readLine()) != null) {
+                            Options options = entry.getValue();
+                            String[] row = line.split(options.cvsSplitBy);
+                            if (row.length > 0 && options.identifyStatementPredicate.test(line) && bankAccountMap.containsKey(row[options.rowNumberFromAccount])) {
+                                return true;
+                            }
+                        }
+                    } catch (IOException | ArrayIndexOutOfBoundsException e) {
+                        LOG.error(() -> String.format("Exception (%s) caught in identifyBankAccount: %s", e.getClass().getName(), e.getMessage()), e);
+                        return false;
+                    }
+                    return false;
+                })
+                .findFirst()
+                .map(Entry::getKey).orElse(null);
     }
 
     @Override

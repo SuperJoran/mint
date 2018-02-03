@@ -1,5 +1,6 @@
 package be.superjoran.mint.services;
 
+import be.superjoran.mint.domain.Bank;
 import be.superjoran.mint.domain.BankAccount;
 import be.superjoran.mint.domain.Person;
 import be.superjoran.mint.domain.Statement;
@@ -24,6 +25,21 @@ public class CsvServiceImplTest {
     @Mock
     private BankAccountService bankAccountService;
 
+    @Test
+    public void identifyBankAccount_BELFIUS() {
+
+        Person person = new Person("test user 2");
+        BankAccount bankAccount1 = new BankAccount();
+        bankAccount1.setNumber("BE08 0321 0249 2813");
+
+        when(this.bankAccountService.findByAdministrator(any()))
+                .thenReturn(Collections.singletonList(bankAccount1));
+
+        Bank result = this.getService().identifyBankAccount(this.getClass().getResource("BELFIUS_EXAMPLE_CSV_1.csv").getPath(), person);
+
+        assertThat(result).isNotNull();
+
+    }
 
     @Test
     public void uploadCSVFile_BELFIUS() {

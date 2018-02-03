@@ -11,4 +11,6 @@ import java.util.List;
 public interface CsvService {
 
     Collection<Statement> uploadCSVFile(String fileUrl, Person person);
+
+    Bank identifyBankAccount(String fileUrl, Person person);
 }
