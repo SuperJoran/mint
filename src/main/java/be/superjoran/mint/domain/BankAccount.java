@@ -2,7 +2,6 @@ package be.superjoran.mint.domain;
 
 import org.hibernate.annotations.Formula;
 import org.hibernate.annotations.JoinColumnOrFormula;
-import org.hibernate.annotations.JoinColumnsOrFormulas;
 import org.hibernate.annotations.JoinFormula;
 
 import javax.persistence.Access;
@@ -49,9 +48,7 @@ public class BankAccount extends DomainObject {
     private BigDecimal balance;
 
     @ManyToOne
-    @JoinColumnsOrFormulas({
-            @JoinColumnOrFormula(formula=@JoinFormula(value="(SELECT MAX(statement.CATEGORY_UUID) FROM T_STATEMENT statement WHERE statement.DESTINATIONACCOUNT_UUID = UUID)", referencedColumnName="UUID")),
-    })
+    @JoinColumnOrFormula(formula = @JoinFormula(value = "(SELECT MAX(statement.CATEGORY_UUID) FROM T_STATEMENT statement WHERE statement.DESTINATIONACCOUNT_UUID = UUID)", referencedColumnName = "UUID"))
     @Access(AccessType.FIELD)
     private Category category;
 

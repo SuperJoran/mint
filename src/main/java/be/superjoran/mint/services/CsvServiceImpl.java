@@ -71,7 +71,7 @@ public class CsvServiceImpl implements CsvService {
                             }
                         }
                     } catch (IOException | ArrayIndexOutOfBoundsException e) {
-                        LOG.error(() -> String.format("Exception (%s) caught in identifyBankAccount: %s", e.getClass().getName(), e.getMessage()), e);
+                        LOG.warn(() -> String.format("Exception (%s) caught in identifyBankAccount: %s", e.getClass().getName(), e.getMessage()), e);
                         return false;
                     }
                     return false;
