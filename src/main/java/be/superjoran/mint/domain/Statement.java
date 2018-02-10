@@ -21,9 +21,10 @@ public class Statement extends DomainObject {
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "ORIGINATINGACCOUNT_UUID")
     private BankAccount originatingAccount;
-    @ManyToOne
-    @JoinColumn(name = "DESTINATIONACCOUNT_UUID")
-    private BankAccount destinationAccount;
+
+    @Column(name = "DESTINATIONACCOUNT_NUMBER")
+    private String destinationAccountNumber;
+
     private LocalDate date;
     private BigDecimal amount;
 
@@ -51,12 +52,12 @@ public class Statement extends DomainObject {
         this.originatingAccount = originatingAccount;
     }
 
-    public BankAccount getDestinationAccount() {
-        return this.destinationAccount;
+    public String getDestinationAccountNumber() {
+        return this.destinationAccountNumber;
     }
 
-    public void setDestinationAccount(BankAccount destinationAccount) {
-        this.destinationAccount = destinationAccount;
+    public void setDestinationAccountNumber(String destinationAccountNumber) {
+        this.destinationAccountNumber = destinationAccountNumber;
     }
 
     public LocalDate getDate() {

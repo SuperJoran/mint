@@ -112,20 +112,12 @@ public class CsvServiceImpl implements CsvService {
 
 
                         String toAccount = StringUtils.replace(this.getValueFromStringArrayAtPosition(row, options.rowNumberToAccount), " ", "");
-                        BankAccount to = bankAccountMap.get(toAccount);
-
-                        if (to == null && toAccount != null && !"-".equalsIgnoreCase(toAccount)) {
-                            to = new BankAccount();
-                            to.setNumber(toAccount);
-                            to.setAdministrator(administrator);
-                            bankAccountMap.put(toAccount, to);
-                        }
 
                         String fromAccount = StringUtils.replace(this.getValueFromStringArrayAtPosition(row, options.rowNumberFromAccount), " ", "");
 
                         statement.setDescription(this.getValueFromStringArrayAtPosition(row, options.rowNumberDescription));
                         statement.setOriginatingAccount(bankAccountMap.get(fromAccount));
-                        statement.setDestinationAccount(to);
+                        statement.setDestinationAccountNumber(toAccount);
 
                         statement.setCsvLine(line);
                         statementList.add(statement);

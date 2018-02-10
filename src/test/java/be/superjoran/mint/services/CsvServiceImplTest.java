@@ -55,7 +55,7 @@ public class CsvServiceImplTest {
 
         assertThat(statements).isNotEmpty()
                 .hasSize(5)
-                .extracting(Statement::getAmount, Statement::getDate, statement -> statement.getDestinationAccount().getNumber())
+                .extracting(Statement::getAmount, Statement::getDate, Statement::getDestinationAccountNumber)
                 .containsExactlyInAnyOrder(
                         new Tuple(new BigDecimal("21.00"), LocalDate.of(2017,12,12), "BE72123410567316"),
                         new Tuple(new BigDecimal("47.50"), LocalDate.of(2017,12,9), "BE72123410567316"),

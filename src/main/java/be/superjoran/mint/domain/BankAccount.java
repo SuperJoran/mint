@@ -47,11 +47,6 @@ public class BankAccount extends DomainObject {
     @Access(AccessType.FIELD)
     private BigDecimal balance;
 
-    @ManyToOne
-    @JoinColumnOrFormula(formula = @JoinFormula(value = "(SELECT MAX(statement.CATEGORY_UUID) FROM T_STATEMENT statement WHERE statement.DESTINATIONACCOUNT_UUID = UUID)", referencedColumnName = "UUID"))
-    @Access(AccessType.FIELD)
-    private Category category;
-
     public Person getOwner() {
         return this.owner;
     }
@@ -98,14 +93,6 @@ public class BankAccount extends DomainObject {
 
     public void setBalance(BigDecimal balance) {
         this.balance = balance;
-    }
-
-    public Category getCategory() {
-        return this.category;
-    }
-
-    public void setCategory(Category category) {
-        this.category = category;
     }
 
     @Override

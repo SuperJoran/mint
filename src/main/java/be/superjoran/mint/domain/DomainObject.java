@@ -46,6 +46,13 @@ public abstract class DomainObject implements Serializable, Cloneable, Display {
     }
 
     @Override
+    public int hashCode() {
+        int hash = 3;
+        hash = 53 * hash + (this.uuid != null ? this.uuid.hashCode() : 0);
+        return hash;
+    }
+
+    @Override
     public boolean equals(Object obj) {
         if(obj instanceof DomainObject){
             return this.getUuid().equals(((DomainObject) obj).getUuid());
