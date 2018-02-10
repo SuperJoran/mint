@@ -2,6 +2,7 @@ package be.superjoran.mint.wicket.configuration;
 
 import be.superjoran.mint.dao.config.FlywayMigrate;
 import be.superjoran.mint.dao.config.PersistenceConfig;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.PropertySource;
@@ -11,6 +12,7 @@ import org.springframework.context.annotation.PropertySource;
         "classpath:application/${application.config}/application.properties"
 })
 @Configuration
+@ComponentScan(value = "be.superjoran.mint.services")
 @Import(PersistenceConfig.class)
 public class ApplicationConfig {
 }
