@@ -31,7 +31,9 @@ public class BankAccountListPanel extends GenericPanel<Person> {
                 .attach(this, "new");
 
         DataTableBuilderFactory.<BankAccount, String>simple()
-                .addColumn(new LambdaColumn<>(new ResourceModel("account"), BankAccount::getBalance))
+                .addColumn(new LambdaColumn<>(new ResourceModel("name"), BankAccount::getName))
+                .addColumn(new LambdaColumn<>(new ResourceModel("number"), BankAccount::getNumber))
+                .addColumn(new LambdaColumn<>(new ResourceModel("balance"), BankAccount::getBalance))
                 .attach(this,"dataTable", new DomainObjectListModel<>(this.bankAccountService, s -> s.findAllByOwner(this.getModelObject())));
     }
 }

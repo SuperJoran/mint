@@ -11,6 +11,6 @@ import be.superjoran.mint.wicket.BasePage;
 public class LogoutPage extends BasePage<Person> implements UnAuthorizedAllowed {
 
     public LogoutPage() {
-
+        CustomSession.get().invalidate();
     }
 }

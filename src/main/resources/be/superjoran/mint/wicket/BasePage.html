@@ -13,25 +13,29 @@
         </div>
         <div class="collapse navbar-collapse" id="myNavbar">
             <ul class="nav navbar-nav">
-                <li><a href="#">Home</a></li>
+                <li><a wicket:id="home" href="#">Home</a></li>
 
             </ul>
             <ul class="nav navbar-nav navbar-right">
                 <li><a wicket:id="registerLink" href="#"><span class="glyphicon glyphicon-user"></span> Sign Up</a></li>
                 <li><a wicket:id="loginLink" href="#"><span class="glyphicon glyphicon-log-in"></span> Login</a></li>
 
-                <li>
-                    <a href="#">
-                        <span class="glyphicon glyphicon-user"></span>
-                        <span>Your name</span>
-                    </a>
-                </li>
-                <li>
+                <wicket:enclosure child="username">
+                    <li>
+                        <a href="#">
+                            <span class="glyphicon glyphicon-user"></span>
+                            <span wicket:id="username">Your name</span>
+                        </a>
+                    </li>
+
+                    <li>
                         <a href="#" wicket:id="logoutLink">
                             <span class="glyphicon glyphicon-log-out"></span>
                             <span>Sign Out</span>
                         </a>
-                </li>
+                    </li>
+                </wicket:enclosure>
+
             </ul>
         </div>
     </div>

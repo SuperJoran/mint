@@ -3,8 +3,10 @@ package be.superjoran.mint.wicket;
 
 import be.superjoran.common.VisibilityBehavior;
 import be.superjoran.common.link.LinkBuilderFactory;
+import be.superjoran.mint.domain.Person;
 import be.superjoran.mint.wicket.person.AuthorizationRequired;
 import be.superjoran.mint.wicket.person.CustomSession;
+import be.superjoran.mint.wicket.person.LoggedInPersonModel;
 import be.superjoran.mint.wicket.person.LoginPage;
 import be.superjoran.mint.wicket.person.LogoutPage;
 import be.superjoran.mint.wicket.person.RegisterPage;
@@ -12,15 +14,18 @@ import de.agilecoders.wicket.extensions.markup.html.bootstrap.icon.FontAwesomeCs
 import org.apache.wicket.markup.head.CssReferenceHeaderItem;
 import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.markup.html.GenericWebPage;
+import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.link.BookmarkablePageLink;
 import org.apache.wicket.model.IModel;
+import org.apache.wicket.model.LambdaModel;
 
 /**
  * Created by Ghostwritertje
  * Date: 30-Sep-16.
  */
-public abstract class BasePage<T> extends GenericWebPage<T>  implements AuthorizationRequired {
+public abstract class BasePage<T> extends GenericWebPage<T> implements AuthorizationRequired {
     private static final long serialVersionUID = 8757457619853670497L;
+    private final LoggedInPersonModel loggedInPersonModel = new LoggedInPersonModel();
 
     protected BasePage() {
         super();
@@ -42,6 +47,12 @@ public abstract class BasePage<T> extends GenericWebPage<T>  implements Authoriz
         LinkBuilderFactory.pageLink(LogoutPage::new)
                 .attach(this, "logoutLink");
 
+        LinkBuilderFactory.pageLink(() -> new HomePage(this.loggedInPersonModel))
+                .attach(this, "home");
+
+        this.add(new Label("username", LambdaModel.of(this.loggedInPersonModel, Person::getUsername))
+                .add(new VisibilityBehavior<>(c -> c.getDefaultModelObject() != null))
+        );
     }
 
     @Override
