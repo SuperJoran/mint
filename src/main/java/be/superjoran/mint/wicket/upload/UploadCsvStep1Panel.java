@@ -1,5 +1,6 @@
 package be.superjoran.mint.wicket.upload;
 
+import be.superjoran.common.VisibilityBehavior;
 import be.superjoran.common.form.BaseForm;
 import be.superjoran.common.link.LinkBuilderFactory;
 import be.superjoran.mint.domain.Person;
@@ -26,7 +27,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class UploadCsvPanel extends GenericPanel<List<FileUpload>> {
+public class UploadCsvStep1Panel extends GenericPanel<List<FileUpload>> {
     private static final long serialVersionUID = 1258816737254458185L;
     private static final Logger LOG = LogManager.getLogger();
 
@@ -37,7 +38,7 @@ public class UploadCsvPanel extends GenericPanel<List<FileUpload>> {
     @SpringBean
     private CsvService csvService;
 
-    public UploadCsvPanel(String id, IModel<List<CsvFile>> csvFilesModel, IModel<Person> personModel) {
+    public UploadCsvStep1Panel(String id, IModel<List<CsvFile>> csvFilesModel, IModel<Person> personModel) {
         super(id, new ListModel<>());
         this.csvFilesModel = csvFilesModel;
         this.personModel = personModel;
@@ -46,6 +47,8 @@ public class UploadCsvPanel extends GenericPanel<List<FileUpload>> {
     @Override
     protected void onInitialize() {
         super.onInitialize();
+
+        this.add(new VisibilityBehavior<UploadCsvStep1Panel>(c -> c.csvFilesModel.getObject() == null));
 
         BaseForm<List<FileUpload>> form = new BaseForm<>("form", this.getModel());
 
@@ -67,7 +70,7 @@ public class UploadCsvPanel extends GenericPanel<List<FileUpload>> {
     private static SerializableBiConsumer<AjaxRequestTarget, AjaxSubmitLink> uploadAction() {
         return (ajaxRequestTarget, components) -> {
 
-            UploadCsvPanel parent = components.findParent(UploadCsvPanel.class);
+            UploadCsvStep1Panel parent = components.findParent(UploadCsvStep1Panel.class);
 
             List<File> files = parent.getModelObject().stream()
                     .map(fileUpload -> {

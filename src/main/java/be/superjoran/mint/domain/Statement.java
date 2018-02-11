@@ -18,7 +18,7 @@ import java.time.LocalDate;
 public class Statement extends DomainObject {
     private static final long serialVersionUID = -5710605280145439611L;
 
-    @ManyToOne(cascade = CascadeType.REFRESH)
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "ORIGINATINGACCOUNT_UUID")
     private BankAccount originatingAccount;
 
