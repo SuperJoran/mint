@@ -1,4 +1,4 @@
-package be.superjoran.mint.dao.config;
+package be.superjoran.mint.dao;
 
 import be.superjoran.mint.domain.BankAccount;
 import be.superjoran.mint.domain.Person;
