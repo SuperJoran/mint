@@ -43,6 +43,12 @@ public class BankAccount extends DomainObject {
         this.owner = owner;
     }
 
+    public BankAccount(Person owner, Bank bank, String number) {
+        this.owner = owner;
+        this.bank = bank;
+        this.number = number;
+    }
+
     public Person getOwner() {
         return this.owner;
     }

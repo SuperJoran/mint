@@ -19,6 +19,9 @@ import org.danekja.java.util.function.serializable.SerializableBiConsumer;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -27,7 +30,7 @@ public class UploadCsvPanel extends GenericPanel<List<FileUpload>> {
     private static final long serialVersionUID = 1258816737254458185L;
     private static final Logger LOG = LogManager.getLogger();
 
-    private static final String UPLOAD_FOLDER = "csvFiles/";
+    private static final String UPLOAD_FOLDER = "csvFiles";
     private final IModel<List<CsvFile>> csvFilesModel;
     private final IModel<Person> personModel;
 
@@ -68,17 +71,20 @@ public class UploadCsvPanel extends GenericPanel<List<FileUpload>> {
 
             List<File> files = parent.getModelObject().stream()
                     .map(fileUpload -> {
-                        File newFile = new File(String.format("%s%s/%s", UPLOAD_FOLDER, parent.personModel.getObject().getUuid(), fileUpload.getClientFileName()));
+                        File newFile;
                         try {
+                            Path path =  Files.createDirectories(Paths.get(String.format("%s/%s", UPLOAD_FOLDER, parent.personModel.getObject().getUuid())));
+                            newFile = new File(String.format("%s/%s", path.toString(), fileUpload.getClientFileName()));
                             fileUpload.writeTo(newFile);
                         } catch (Exception e) {
                             LOG.error(() -> String.format("Exception (%s) caught in uploadAction: %s", e.getClass().getName(), e.getMessage()), e);
+                            throw new RuntimeException(e);
                         }
                         return newFile;
                     })
                     .collect(Collectors.toList());
 
-            parent.csvFilesModel.setObject(parent.csvService.identifyCsvFiles(files));
+            parent.csvFilesModel.setObject(parent.csvService.identifyCsvFiles(files, parent.personModel.getObject()));
             ajaxRequestTarget.add(parent.findPage());
         };
     }

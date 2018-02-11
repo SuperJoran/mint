@@ -22,6 +22,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
@@ -51,59 +52,59 @@ public class CsvServiceImpl implements CsvService {
     private static final Map<Bank, Options> SUPPORTED_BANKS_OPTIONS = new EnumMap<>(Bank.class);
 
     static {
-        SUPPORTED_BANKS_OPTIONS.put(Bank.KEYTRADE, new Options(";", s -> s.endsWith("EUR"), "dd.MM.yyyy", 5, 1, -1, 3, 4));
         SUPPORTED_BANKS_OPTIONS.put(Bank.BELFIUS, new Options(";", s -> s.startsWith("BE"), "dd/MM/yyyy", 10, 1, 0, 4, 8));
         SUPPORTED_BANKS_OPTIONS.put(Bank.ING, new Options(";", s -> Character.isDigit(s.charAt(0)), "dd/MM/yyyy", 6, 4, 0, 2, 8));
+        SUPPORTED_BANKS_OPTIONS.put(Bank.KEYTRADE, new Options(";", s -> false, "dd.MM.yyyy", 5, 1, -1, 3, 4));
     }
 
     @Override
-    public Bank identifyBankAccount(String fileUrl, Person person) {
+    public BankAccount identifyBankAccount(String fileUrl, Person person) {
         Map<String, BankAccount> bankAccountMap = this.bankAccountService.findAllByOwner(person)
                 .stream()
                 .collect(Collectors.toConcurrentMap(BankAccount::getNumber, b -> b));
+        BankAccount bankAccount = null;
 
-        return SUPPORTED_BANKS_OPTIONS.entrySet().stream()
-                .filter(entry -> {
-                    String line;
-                    try (BufferedReader br = new BufferedReader(new FileReader(fileUrl))) {
-                        while ((line = br.readLine()) != null) {
-                            Options options = entry.getValue();
-                            String[] row = line.split(options.cvsSplitBy);
-                            if (row.length > 0 && options.identifyStatementPredicate.test(line) && bankAccountMap.containsKey(row[options.rowNumberFromAccount])) {
-                                return true;
-                            }
+        try (BufferedReader br = new BufferedReader(new FileReader(fileUrl))) {
+            String line;
+
+            while ((line = br.readLine()) != null && bankAccount == null) {
+                for (Entry<Bank, Options> entry : SUPPORTED_BANKS_OPTIONS.entrySet()) {
+                    String[] row = line.split(entry.getValue().cvsSplitBy);
+                    if (row.length > 0 && entry.getValue().identifyStatementPredicate.test(line)) {
+                        bankAccount = bankAccountMap.get(row[entry.getValue().rowNumberFromAccount]);
+                        if (bankAccount == null) {
+                            bankAccount = new BankAccount(person, entry.getKey(), row[entry.getValue().rowNumberFromAccount]);
                         }
-                    } catch (IOException | ArrayIndexOutOfBoundsException e) {
-                        LOG.warn(() -> String.format("Exception (%s) caught in identifyBankAccount: %s", e.getClass().getName(), e.getMessage()), e);
-                        return false;
                     }
-                    return false;
-                })
-                .findFirst()
-                .map(Entry::getKey).orElse(null);
+                }
+            }
+
+        } catch (IOException e) {
+            LOG.error(() -> String.format("Exception (%s) caught in identifyBankAccount2: %s", e.getClass().getName(), e.getMessage()), e);
+        }
+        return bankAccount;
+
     }
 
     @Override
-    public List<CsvFile> identifyCsvFiles(List<File> files) {
-        return files.stream().map(fileUrl -> new CsvFile(fileUrl, new BankAccount())).collect(Collectors.toList());
+    public List<CsvFile> identifyCsvFiles(List<File> files, Person person) {
+        return files.stream().map(fileUrl -> new CsvFile(fileUrl, this.identifyBankAccount(fileUrl.getAbsolutePath(), person))).collect(Collectors.toList());
     }
 
     @Override
-    public Collection<Statement> uploadCSVFile(String fileUrl, Person person) {
-        return this.uploadCsv(fileUrl, person, SUPPORTED_BANKS_OPTIONS.get(this.identifyBankAccount(fileUrl, person)));
+    public Collection<Statement> uploadCSVFiles(List<CsvFile> files) {
+        return files.stream()
+                .flatMap(f -> this.uploadCsv(f, SUPPORTED_BANKS_OPTIONS.get(f.getBankAccount().getBank())).stream())
+                .collect(Collectors.toList());
     }
 
 
-    private Collection<Statement> uploadCsv(String fileUrl, Person administrator, Options options) {
+    private Collection<Statement> uploadCsv(CsvFile csvFile, Options options) {
         String line;
-
-        Map<String, BankAccount> bankAccountMap = this.bankAccountService.findAllByOwner(administrator)
-                .stream()
-                .collect(Collectors.toConcurrentMap(BankAccount::getNumber, b -> b));
 
         Collection<Statement> statementList = new ArrayList<>();
 
-        try (BufferedReader br = new BufferedReader(new FileReader(fileUrl))) {
+        try (BufferedReader br = new BufferedReader(new FileReader(csvFile.getFileUrl()))) {
             while ((line = br.readLine()) != null) {
 
                 String[] row = line.split(options.cvsSplitBy);
@@ -124,7 +125,7 @@ public class CsvServiceImpl implements CsvService {
                         String fromAccount = StringUtils.replace(this.getValueFromStringArrayAtPosition(row, options.rowNumberFromAccount), " ", "");
 
                         statement.setDescription(this.getValueFromStringArrayAtPosition(row, options.rowNumberDescription));
-                        statement.setOriginatingAccount(bankAccountMap.get(fromAccount));
+                        statement.setOriginatingAccount(csvFile.getBankAccount());
                         statement.setDestinationAccountNumber(toAccount);
 
                         statement.setCsvLine(line);
@@ -139,7 +140,7 @@ public class CsvServiceImpl implements CsvService {
             LOG.error(() -> String.format("Exception (%s) caught in uploadCsv: %s", e.getClass().getName(), e.getMessage()), e);
         }
 
-        return null;
+        return Collections.emptyList();
     }
 
     private String getValueFromStringArrayAtPosition(String[] stringArray, int position) {

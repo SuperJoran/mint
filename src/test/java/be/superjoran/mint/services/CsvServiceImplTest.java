@@ -1,19 +1,21 @@
 package be.superjoran.mint.services;
 
-import be.superjoran.mint.domain.Bank;
 import be.superjoran.mint.domain.BankAccount;
 import be.superjoran.mint.domain.Person;
 import be.superjoran.mint.domain.Statement;
+import be.superjoran.mint.domain.searchresults.CsvFile;
 import org.assertj.core.groups.Tuple;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import java.io.File;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -35,7 +37,7 @@ public class CsvServiceImplTest {
         when(this.bankAccountService.findAllByOwner(any()))
                 .thenReturn(Collections.singletonList(bankAccount1));
 
-        Bank result = this.getService().identifyBankAccount(this.getClass().getResource("BELFIUS_EXAMPLE_CSV_1.csv").getPath(), person);
+        BankAccount result = this.getService().identifyBankAccount(this.getClass().getResource("BELFIUS_EXAMPLE_CSV_1.csv").getPath(), person);
 
         assertThat(result).isNotNull();
 
@@ -45,13 +47,13 @@ public class CsvServiceImplTest {
     public void uploadCSVFile_BELFIUS() {
 
         Person person = new Person("test user 2");
-        BankAccount bankAccount1 = new BankAccount();
-        bankAccount1.setNumber("BE08 0321 0249 2813");
 
         when(this.bankAccountService.findAllByOwner(any()))
-                .thenReturn(Collections.singletonList(bankAccount1));
+                .thenReturn(Collections.emptyList());
 
-        Collection<Statement> statements = this.getService().uploadCSVFile(this.getClass().getResource("BELFIUS_EXAMPLE_CSV_1.csv").getPath(), person);
+        List<CsvFile> list = this.getService().identifyCsvFiles(Collections.singletonList(new File(this.getClass().getResource("BELFIUS_EXAMPLE_CSV_1.csv").getPath())), person);
+
+        Collection<Statement> statements = this.getService().uploadCSVFiles(list);
 
         assertThat(statements).isNotEmpty()
                 .hasSize(5)
