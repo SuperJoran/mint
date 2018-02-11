@@ -1,8 +1,15 @@
 package be.superjoran.mint.wicket;
 
 import be.superjoran.mint.domain.Person;
+import be.superjoran.mint.domain.searchresults.CsvFile;
 import be.superjoran.mint.wicket.bankaccounts.BankAccountListPanel;
+import be.superjoran.mint.wicket.upload.UploadCsvPanel;
+import be.superjoran.mint.wicket.upload.UploadCsvStep2Panel;
 import org.apache.wicket.model.IModel;
+import org.apache.wicket.model.util.ListModel;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class HomePage extends BasePage<Person> {
     private static final long serialVersionUID = -649183163655825915L;
@@ -16,5 +23,10 @@ public class HomePage extends BasePage<Person> {
         super.onInitialize();
 
         this.add(new BankAccountListPanel("bankAccounts", this.getModel()));
+
+        IModel<List<CsvFile>> listIModel = new ListModel<>(new ArrayList<>());
+        this.add(new UploadCsvPanel("fileUpload", listIModel, this.getModel()));
+
+        this.add(new UploadCsvStep2Panel("fileUploads", listIModel));
     }
 }
