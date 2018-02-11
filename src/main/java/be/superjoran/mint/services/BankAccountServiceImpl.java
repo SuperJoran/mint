@@ -23,7 +23,7 @@ public class BankAccountServiceImpl extends DomainObjectCrudServiceSupport<BankA
     }
 
     @Override
-    public List<BankAccount> findByAdministrator(Person administrator) {
-        return this.bankAccountDao.findAllByAdministrator(administrator);
+    public List<BankAccount> findAllByOwner(Person administrator) {
+        return this.bankAccountDao.findAllByOwner(administrator);
     }
 }

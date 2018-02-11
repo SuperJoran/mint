@@ -32,7 +32,7 @@ public class CsvServiceImplTest {
         BankAccount bankAccount1 = new BankAccount();
         bankAccount1.setNumber("BE08 0321 0249 2813");
 
-        when(this.bankAccountService.findByAdministrator(any()))
+        when(this.bankAccountService.findAllByOwner(any()))
                 .thenReturn(Collections.singletonList(bankAccount1));
 
         Bank result = this.getService().identifyBankAccount(this.getClass().getResource("BELFIUS_EXAMPLE_CSV_1.csv").getPath(), person);
@@ -48,7 +48,7 @@ public class CsvServiceImplTest {
         BankAccount bankAccount1 = new BankAccount();
         bankAccount1.setNumber("BE08 0321 0249 2813");
 
-        when(this.bankAccountService.findByAdministrator(any()))
+        when(this.bankAccountService.findAllByOwner(any()))
                 .thenReturn(Collections.singletonList(bankAccount1));
 
         Collection<Statement> statements = this.getService().uploadCSVFile(this.getClass().getResource("BELFIUS_EXAMPLE_CSV_1.csv").getPath(), person);

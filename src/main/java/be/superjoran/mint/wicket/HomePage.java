@@ -1,6 +1,7 @@
 package be.superjoran.mint.wicket;
 
 import be.superjoran.mint.domain.Person;
+import be.superjoran.mint.wicket.bankaccounts.BankAccountListPanel;
 import org.apache.wicket.model.IModel;
 
 public class HomePage extends BasePage<Person> {

@@ -1,8 +1,6 @@
 package be.superjoran.mint.domain;
 
 import org.hibernate.annotations.Formula;
-import org.hibernate.annotations.JoinColumnOrFormula;
-import org.hibernate.annotations.JoinFormula;
 
 import javax.persistence.Access;
 import javax.persistence.AccessType;
@@ -11,7 +9,6 @@ import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
-import javax.persistence.UniqueConstraint;
 import java.math.BigDecimal;
 
 /**
@@ -19,17 +16,9 @@ import java.math.BigDecimal;
  * Date: 01-Oct-16.
  */
 @Entity
-@Table(name = "T_BANKACCOUNT", uniqueConstraints = {
-        @UniqueConstraint(
-                columnNames = {"NUMBER", "ADMINISTRATOR_UUID"}
-        )
-})
+@Table(name = "T_BANKACCOUNT")
 public class BankAccount extends DomainObject {
     private static final long serialVersionUID = -4411985824034001947L;
-
-    @ManyToOne(optional = false)
-    @JoinColumn(name = "ADMINISTRATOR_UUID")
-    private Person administrator;
 
     @ManyToOne
     @JoinColumn(name = "OWNER_UUID")
@@ -47,20 +36,19 @@ public class BankAccount extends DomainObject {
     @Access(AccessType.FIELD)
     private BigDecimal balance;
 
+    public BankAccount() {
+    }
+
+    public BankAccount(Person owner) {
+        this.owner = owner;
+    }
+
     public Person getOwner() {
         return this.owner;
     }
 
     public void setOwner(Person owner) {
         this.owner = owner;
-    }
-
-    public Person getAdministrator() {
-        return this.administrator;
-    }
-
-    public void setAdministrator(Person administrator) {
-        this.administrator = administrator;
     }
 
     public Bank getBank() {

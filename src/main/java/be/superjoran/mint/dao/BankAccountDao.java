@@ -10,5 +10,5 @@ import java.util.List;
 @Repository
 public interface BankAccountDao extends JpaRepository<BankAccount, String> {
 
-    List<BankAccount> findAllByAdministrator(Person administrator);
+    List<BankAccount> findAllByOwner(Person administrator);
 }

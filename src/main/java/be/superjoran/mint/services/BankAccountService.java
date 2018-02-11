@@ -8,5 +8,5 @@ import java.util.List;
 
 public interface BankAccountService extends DomainObjectCrudService<BankAccount> {
 
-    List<BankAccount> findByAdministrator(Person administrator);
+    List<BankAccount> findAllByOwner(Person administrator);
 }

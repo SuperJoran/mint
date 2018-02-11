@@ -55,7 +55,7 @@ public class CsvServiceImpl implements CsvService {
 
     @Override
     public Bank identifyBankAccount(String fileUrl, Person person) {
-        Map<String, BankAccount> bankAccountMap = this.bankAccountService.findByAdministrator(person)
+        Map<String, BankAccount> bankAccountMap = this.bankAccountService.findAllByOwner(person)
                 .stream()
                 .collect(Collectors.toConcurrentMap(BankAccount::getNumber, b -> b));
 
@@ -89,7 +89,7 @@ public class CsvServiceImpl implements CsvService {
     private Collection<Statement> uploadCsv(String fileUrl, Person administrator, Options options) {
         String line;
 
-        Map<String, BankAccount> bankAccountMap = this.bankAccountService.findByAdministrator(administrator)
+        Map<String, BankAccount> bankAccountMap = this.bankAccountService.findAllByOwner(administrator)
                 .stream()
                 .collect(Collectors.toConcurrentMap(BankAccount::getNumber, b -> b));
 
