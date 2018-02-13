@@ -5,6 +5,7 @@ import be.superjoran.common.link.LinkBuilderFactory;
 import be.superjoran.common.model.DomainObjectListModel;
 import be.superjoran.mint.domain.BankAccount;
 import be.superjoran.mint.domain.Person;
+import be.superjoran.mint.domain.searchresults.DestinationCategory;
 import be.superjoran.mint.services.BankAccountService;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.LambdaColumn;
 import org.apache.wicket.markup.html.panel.GenericPanel;
@@ -35,5 +36,10 @@ public class BankAccountListPanel extends GenericPanel<Person> {
                 .addColumn(new LambdaColumn<>(new ResourceModel("number"), BankAccount::getNumber))
                 .addColumn(new LambdaColumn<>(new ResourceModel("balance"), BankAccount::getBalance))
                 .attach(this,"dataTable", new DomainObjectListModel<>(this.bankAccountService, s -> s.findAllByOwner(this.getModelObject())));
+
+
+        DataTableBuilderFactory.<DestinationCategory, String>simple()
+                .addColumn(new LambdaColumn<>(new ResourceModel("name"), DestinationCategory::getDestinationAccountNumber))
+                .attach(this, "dataTable2", new DestinationCategoryListModel());
     }
 }

@@ -15,6 +15,7 @@
         <postgresql.version>9.4.1212.jre7</postgresql.version>
         <wicket.version>8.0.0-M8</wicket.version>
         <wicket-bootstrap.version>2.0.0-M7</wicket-bootstrap.version>
+        <spring-batch.version>3.0.8.RELEASE</spring-batch.version>
     </properties>
 
     <dependencies>
@@ -53,6 +54,11 @@
             <groupId>org.springframework</groupId>
             <artifactId>spring-jdbc</artifactId>
             <version>${spring-web.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.batch</groupId>
+            <artifactId>spring-batch-core</artifactId>
+            <version>${spring-batch.version}</version>
         </dependency>
 
         <dependency>

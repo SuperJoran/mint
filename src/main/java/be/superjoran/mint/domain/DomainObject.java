@@ -20,6 +20,13 @@ public abstract class DomainObject implements Serializable, Cloneable, Display {
     @GenericGenerator(name = "uuid2", strategy = "uuid2")
     private String uuid;
 
+    public DomainObject() {
+    }
+
+    public DomainObject(String uuid) {
+        this.uuid = uuid;
+    }
+
     public String getUuid() {
         return this.uuid;
     }

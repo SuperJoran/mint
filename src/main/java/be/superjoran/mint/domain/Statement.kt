@@ -28,7 +28,7 @@ class Statement : DomainObject {
             return field
         }
 
-    @ManyToOne
+    @ManyToOne(cascade = arrayOf(CascadeType.MERGE))
     @JoinColumn(name = "CATEGORY_UUID")
     var category: Category? = null
 
@@ -38,12 +38,4 @@ class Statement : DomainObject {
     var csvLine: String? = null
 
     constructor()
-
-    constructor(description: String) {
-        this.description = description
-    }
-
-    companion object {
-        private val serialVersionUID = -5710605280145439611L
-    }
 }

@@ -21,9 +21,7 @@ class Category : DomainObject {
 
     constructor()
 
-    constructor(name: String) {
-        this.name = name
-    }
+    constructor(uuid: String) : super(uuid)
 
     override fun getDisplayValue(): String {
         return this.toString()
