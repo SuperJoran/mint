@@ -16,5 +16,9 @@
             <AppenderRef ref="Console"/>
         </Logger>
 
+        <Logger name="org.flywaydb.core.internal.command.DbMigrate" level="INFO" additivity="false">
+            <AppenderRef ref="Console"/>
+        </Logger>
+
     </Loggers>
 </Configuration>
