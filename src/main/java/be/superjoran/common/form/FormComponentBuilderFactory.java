@@ -1,5 +1,7 @@
 package be.superjoran.common.form;
 
+import be.superjoran.mint.domain.Display;
+
 import java.io.Serializable;
 
 /**

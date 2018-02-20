@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:wicket="http://wicket.apache.org">
+<body>
+<wicket:panel>
+    <form wicket:id="form">
+        <div wicket:id="checkGroup">
+            <table wicket:id="datatable"></table>
+        </div>
+
+        <div class="panel panel-info" wicket:id="sticky" style="position: sticky; bottom: 0;">
+            <div class="panel-heading">Assign a category</div>
+            <div class="panel-body">
+                <div class="form-group">
+                    <label class="control-label col-sm-2" for="category" wicket:id="category-label">Name</label>
+                    <div class="col-sm-10">
+                        <select type="text" class="form-control" id="category" placeholder="category" wicket:id="category"></select>
+                        <label wicket:id="category-read"></label>
+                    </div>
+                </div>
+                <a class="btn btn-default" wicket:id="save">Save</a>
+            </div>
+        </div>
+    </form>
+</wicket:panel>
+</body>
+</html>

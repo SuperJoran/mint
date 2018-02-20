@@ -10,6 +10,7 @@ import be.superjoran.mint.wicket.person.LoggedInPersonModel;
 import be.superjoran.mint.wicket.person.LoginPage;
 import be.superjoran.mint.wicket.person.LogoutPage;
 import be.superjoran.mint.wicket.person.RegisterPage;
+import be.superjoran.mint.wicket.statements.StatementListPage;
 import de.agilecoders.wicket.extensions.markup.html.bootstrap.icon.FontAwesomeCssReference;
 import org.apache.wicket.markup.head.CssReferenceHeaderItem;
 import org.apache.wicket.markup.head.IHeaderResponse;
@@ -49,6 +50,9 @@ public abstract class BasePage<T> extends GenericWebPage<T> implements Authoriza
 
         LinkBuilderFactory.pageLink(() -> new HomePage(this.loggedInPersonModel))
                 .attach(this, "home");
+
+        LinkBuilderFactory.pageLink(() -> new StatementListPage(this.loggedInPersonModel))
+                .attach(this, "statementsLink");
 
         this.add(new Label("username", LambdaModel.of(this.loggedInPersonModel, Person::getUsername))
                 .add(new VisibilityBehavior<>(c -> c.getDefaultModelObject() != null))

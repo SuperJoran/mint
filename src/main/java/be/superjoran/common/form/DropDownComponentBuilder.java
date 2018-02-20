@@ -1,5 +1,6 @@
 package be.superjoran.common.form;
 
+import be.superjoran.mint.domain.Display;
 import org.apache.wicket.MarkupContainer;
 import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.model.IModel;
