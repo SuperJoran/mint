@@ -11,8 +11,10 @@ import be.superjoran.mint.domain.Category;
 import be.superjoran.mint.domain.Statement;
 import be.superjoran.mint.services.CategoryService;
 import be.superjoran.mint.services.StatementService;
+import org.apache.wicket.MarkupContainer;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.form.AjaxSubmitLink;
+import org.apache.wicket.extensions.markup.html.repeater.data.table.DataTable;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.LambdaColumn;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.form.CheckGroup;
@@ -28,9 +30,11 @@ import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 
-public class StatementListPanel extends GenericPanel<List<Statement>>{
+public class StatementListPanel extends GenericPanel<List<Statement>> {
     private static final long serialVersionUID = -2535058452494166227L;
     private static final String FORM_ID = "form";
+    private static final String DATATABLE_ID = "datatable";
+    private static final String CHECK_GROUP_ID = "checkGroup";
 
     @SpringBean
     private StatementService statementService;
@@ -39,11 +43,16 @@ public class StatementListPanel extends GenericPanel<List<Statement>>{
 
     private final IModel<List<Statement>> selectedStatementsModel;
     private final Model<Category> chosenCategoryModel;
+    private final IModel<List<Statement>> filteredStatementsModel;
+    private Model<String> searchModel;
 
     public StatementListPanel(String id, IModel<List<Statement>> model) {
         super(id, model);
         this.selectedStatementsModel = new ListModel<>(new ArrayList<>());
         this.chosenCategoryModel = new Model<>(null);
+        this.searchModel = new Model<>("");
+        this.filteredStatementsModel = new FilteredStatementsModel(model, this.searchModel);
+
     }
 
     @Override
@@ -51,9 +60,11 @@ public class StatementListPanel extends GenericPanel<List<Statement>>{
         super.onInitialize();
         this.setOutputMarkupId(true);
 
+        this.add(new StatementsSearchCriteriaPanel("search", this.searchModel));
+
         BaseForm<List<Statement>> dataTableForm = new BaseForm<>(FORM_ID, this.getModel());
 
-        CheckGroup<Statement> checkGroup = new CheckGroup<Statement>("checkGroup", this.selectedStatementsModel);
+        CheckGroup<Statement> checkGroup = new CheckGroup<Statement>(CHECK_GROUP_ID, this.selectedStatementsModel);
 
         DataTableBuilderFactory.<Statement, String>simple()
                 .addColumn(ColumnBuilderFactory.<Statement, String>check().build(new ResourceModel("category")))
@@ -61,9 +72,14 @@ public class StatementListPanel extends GenericPanel<List<Statement>>{
                 .addColumn(new LambdaColumn<>(new ResourceModel("to"), Statement::getDestinationAccountNumber))
                 .addColumn(new LambdaColumn<>(new ResourceModel("description"), Statement::getDescription))
                 .addColumn(new LambdaColumn<>(new ResourceModel("category"), Statement::getCategory))
-                .attach(checkGroup, "datatable", this.getModel());
+                .attach(checkGroup, DATATABLE_ID, this.filteredStatementsModel);
         dataTableForm.add(checkGroup);
 
+        this.stickyFooter(dataTableForm);
+        this.add(dataTableForm);
+    }
+
+    private void stickyFooter(MarkupContainer parent) {
         WebMarkupContainer stickyFooter = new WebMarkupContainer("sticky");
         LinkBuilderFactory.submitLink(save())
                 .attach(stickyFooter, "save");
@@ -72,13 +88,17 @@ public class StatementListPanel extends GenericPanel<List<Statement>>{
                 .body(new ResourceModel("category"))
                 .attach(stickyFooter, "category", this.chosenCategoryModel, new DomainObjectListModel<>(this.categoryService));
 
-        dataTableForm.add(stickyFooter);
-        this.add(dataTableForm);
+        parent.add(stickyFooter);
     }
 
     @SuppressWarnings("unchecked")
     private BaseForm<List<Statement>> getForm() {
         return (BaseForm<List<Statement>>) this.get(FORM_ID);
+    }
+
+    @SuppressWarnings({"unchecked"})
+    DataTable<Statement, String> getDataTable() {
+        return (DataTable<Statement, String>) this.getForm().get(CHECK_GROUP_ID).get(DATATABLE_ID);
     }
 
     @NotNull

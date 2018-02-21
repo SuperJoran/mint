@@ -6,12 +6,11 @@ import be.superjoran.mint.domain.Statement;
 import be.superjoran.mint.domain.searchresults.CsvFile;
 
 import java.io.File;
-import java.util.Collection;
 import java.util.List;
 
 public interface CsvService {
 
-    Collection<Statement> uploadCSVFiles(List<CsvFile> file);
+    Iterable<Statement> uploadCSVFiles(List<CsvFile> file);
 
     BankAccount identifyBankAccount(String fileUrl, Person person);
 

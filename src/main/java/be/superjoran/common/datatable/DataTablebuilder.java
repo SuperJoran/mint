@@ -30,6 +30,7 @@ public class DataTablebuilder<T extends Serializable, S> {
         MySortableDataProvider<T, S> dataProvider = new MySortableDataProvider<>(data);
         BootstrapDefaultDataTable<T, S> components = new BootstrapDefaultDataTable<>(id, this.columns, dataProvider, 25);
         components.striped();
+        components.setOutputMarkupId(true);
         return components;
     }
 

@@ -30,8 +30,10 @@ public abstract class FormComponentBuilder<X extends FormComponent<?>, T extends
     private boolean switchable = true;
     private SerializableSupplier<IModel<String>> labelModel = Model::new;
     private boolean required = false;
+    private boolean usingLabel = true;
     private final Collection<SerializableSupplier<? extends Behavior>> behaviors = new ArrayList<>();
     private SerializableFunction<String, MarkupContainer> containerSupplier;
+    private SerializableConsumer<X> configureConsumer = c -> {};
 
     public F usingDefaults() {
         this.switchable = true;
@@ -40,6 +42,16 @@ public abstract class FormComponentBuilder<X extends FormComponent<?>, T extends
 
     public F switchable(boolean switchable) {
         this.switchable = switchable;
+        return this.self();
+    }
+
+    public F noLabel() {
+        this.usingLabel = false;
+        return this.self();
+    }
+
+    public F configure(SerializableConsumer<X> configureConsumer) {
+        this.configureConsumer = configureConsumer;
         return this.self();
     }
 
@@ -88,11 +100,15 @@ public abstract class FormComponentBuilder<X extends FormComponent<?>, T extends
             initialParent.add(newParent);
             return newParent;
         }).orElse(initialParent);
-        Component label = this.labelSupplier.apply(id + "-label", this.labelModel.get());
+        if(this.usingLabel) {
+            Component label = this.labelSupplier.apply(id + "-label", this.labelModel.get());
+            parent.add(label.setOutputMarkupPlaceholderTag(true));
+        }
         X formComponent = this.buildFormComponent(id, model);
         formComponent.setOutputMarkupId(true);
 
         formComponent.setRequired(this.required);
+        this.configureConsumer.accept(formComponent);
 
         this.behaviors.forEach(wicketFunction -> formComponent.add(wicketFunction.get()));
 
@@ -102,7 +118,6 @@ public abstract class FormComponentBuilder<X extends FormComponent<?>, T extends
             formComponent.add(new VisibilityBehavior<>(component -> component.findParent(BaseForm.class).getFormModeModel().getObject().equals(BaseForm.FormMode.EDIT)));
             readLabel.add(new VisibilityBehavior<>(component -> component.findParent(BaseForm.class).getFormModeModel().getObject().equals(BaseForm.FormMode.READ)));
         }
-        parent.add(label.setOutputMarkupPlaceholderTag(true));
         parent.add(formComponent.setOutputMarkupPlaceholderTag(true));
         return this.self();
     }
