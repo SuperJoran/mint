@@ -13,7 +13,6 @@ import org.mockito.junit.MockitoJUnitRunner;
 import java.io.File;
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -26,6 +25,8 @@ public class CsvServiceImplTest {
 
     @Mock
     private BankAccountService bankAccountService;
+    @Mock
+    private StatementService statementService;
 
     @Test
     public void identifyBankAccount_BELFIUS() {
@@ -50,10 +51,12 @@ public class CsvServiceImplTest {
 
         when(this.bankAccountService.findAllByOwner(any()))
                 .thenReturn(Collections.emptyList());
+        when(this.statementService.save(any(Iterable.class)))
+                .thenAnswer(i -> i.getArgument(0));
 
         List<CsvFile> list = this.getService().identifyCsvFiles(Collections.singletonList(new File(this.getClass().getResource("BELFIUS_EXAMPLE_CSV_1.csv").getPath())), person);
 
-        Collection<Statement> statements = this.getService().uploadCSVFiles(list);
+        Iterable<Statement> statements = this.getService().uploadCSVFiles(list);
 
         assertThat(statements).isNotEmpty()
                 .hasSize(5)
@@ -68,6 +71,6 @@ public class CsvServiceImplTest {
     }
 
     private CsvService getService() {
-        return new CsvServiceImpl(this.bankAccountService);
+        return new CsvServiceImpl(this.bankAccountService, statementService);
     }
 }

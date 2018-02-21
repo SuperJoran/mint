@@ -9,7 +9,6 @@ import be.superjoran.mint.domain.searchresults.CsvFile;
 import com.google.common.base.CharMatcher;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
@@ -43,10 +42,11 @@ public class CsvServiceImpl implements CsvService {
     private static final Logger LOG = LogManager.getLogger();
 
     private final BankAccountService bankAccountService;
+    private final StatementService statementService;
 
-    @Autowired
-    public CsvServiceImpl(BankAccountService bankAccountService) {
+    public CsvServiceImpl(BankAccountService bankAccountService, StatementService statementService) {
         this.bankAccountService = bankAccountService;
+        this.statementService = statementService;
     }
 
     private static final Map<Bank, Options> SUPPORTED_BANKS_OPTIONS = new EnumMap<>(Bank.class);
@@ -61,7 +61,7 @@ public class CsvServiceImpl implements CsvService {
     public BankAccount identifyBankAccount(String fileUrl, Person person) {
         Map<String, BankAccount> bankAccountMap = this.bankAccountService.findAllByOwner(person)
                 .stream()
-                .collect(Collectors.toConcurrentMap(BankAccount::getNumber, b -> b));
+                .collect(Collectors.toMap(BankAccount::getNumber, b -> b));
         BankAccount bankAccount = null;
 
         try (BufferedReader br = new BufferedReader(new FileReader(fileUrl))) {
@@ -92,10 +92,10 @@ public class CsvServiceImpl implements CsvService {
     }
 
     @Override
-    public Collection<Statement> uploadCSVFiles(List<CsvFile> files) {
-        return files.stream()
+    public Iterable<Statement> uploadCSVFiles(List<CsvFile> files) {
+        return this.statementService.save(files.stream()
                 .flatMap(f -> this.uploadCsv(f, SUPPORTED_BANKS_OPTIONS.get(f.getBankAccount().getBank())).stream())
-                .collect(Collectors.toList());
+                .collect(Collectors.toList()));
     }
 
 
