@@ -12,7 +12,7 @@ import javax.persistence.*
 @Table(name = "T_STATEMENT")
 class Statement : DomainObject {
 
-    @ManyToOne(cascade = arrayOf(CascadeType.ALL))
+    @ManyToOne(cascade = arrayOf(CascadeType.MERGE, CascadeType.PERSIST))
     @JoinColumn(name = "ORIGINATINGACCOUNT_UUID")
     var originatingAccount: BankAccount? = null
 

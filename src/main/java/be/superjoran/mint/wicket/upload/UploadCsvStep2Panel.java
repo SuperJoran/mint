@@ -53,6 +53,7 @@ public class UploadCsvStep2Panel extends GenericPanel<List<CsvFile>> {
         return (ajaxRequestTarget, components) -> {
             UploadCsvStep2Panel parent = components.findParent(UploadCsvStep2Panel.class);
             parent.statementService.save(parent.csvService.uploadCSVFiles(parent.getModelObject()));
+            parent.setModelObject(null);
             ajaxRequestTarget.add(components.getPage());
         };
     }
