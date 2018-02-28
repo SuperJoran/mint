@@ -10,17 +10,14 @@ import java.util.*
 enum class Bank : Display, Serializable {
     KEYTRADE, BELFIUS, ING;
 
-    override fun getId(): String {
-        return this.name
-    }
-
-    override fun getDisplayValue(): String {
-        return this.name
-    }
+    override val id: String
+        get() = this.name
+    override val displayValue: String
+        get() = this.name
 
 
     companion object {
-        public fun getBanks(): List<Bank> {
+        fun getBanks(): List<Bank> {
             return Arrays.asList(Bank.BELFIUS, Bank.KEYTRADE, Bank.ING)
         }
     }

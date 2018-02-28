@@ -24,12 +24,7 @@ class CategoryGroup(
         return this.categoryList
     }
 
-    override fun getDisplayValue(): String? {
-        return this.name
-    }
-
-    override fun toString(): String {
-        return this.name
-    }
+    override val displayValue: String?
+        get() = this.name
 
 }

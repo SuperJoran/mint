@@ -17,9 +17,8 @@ class Category(uuid: String, var name: String) : DomainObject(uuid) {
     @JoinColumn(name = "CATEGORY_GROUP_UUID")
     var categoryGroup: CategoryGroup? = null
 
-    override fun getDisplayValue(): String {
-        return this.toString()
-    }
+    override val displayValue: String?
+        get() = this.name
 
     override fun toString(): String {
         return String.format("%s - %s", this.categoryGroup!!.name, this.name)

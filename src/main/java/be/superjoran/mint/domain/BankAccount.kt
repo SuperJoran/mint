@@ -39,9 +39,8 @@ class BankAccount
         this.name = name
     }
 
-    override fun getDisplayValue(): String? {
-        return this.toString()
-    }
+    override val displayValue: String?
+        get() = this.name
 
     override fun toString(): String {
         return if (this.name != null) this.name.toString() else this.number

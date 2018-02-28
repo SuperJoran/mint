@@ -6,11 +6,9 @@ package be.superjoran.mint.domain
 enum class CategoryType : Display {
     INCOME, EXPENSE, UNTRACKED;
 
-    override fun getId(): String {
-        return this.name
-    }
+    override val id: String?
+        get() = this.name
 
-    override fun getDisplayValue(): String {
-        return this.name
-    }
+    override val displayValue: String?
+        get() = this.name
 }
