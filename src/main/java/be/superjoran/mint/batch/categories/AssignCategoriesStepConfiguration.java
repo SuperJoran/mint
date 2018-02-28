@@ -49,7 +49,7 @@ public class AssignCategoriesStepConfiguration {
     @Bean
     @StepScope
     @Autowired
-    public JdbcPagingItemReader<Statement> reader(
+    public ItemReader<Statement> reader(
             DataSource dataSource,
             PagingQueryProvider queryProvider,
             @Value("#{jobParameters['personUuid']}") String personUuid
