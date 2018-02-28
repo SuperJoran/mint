@@ -27,7 +27,6 @@ import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.function.Predicate;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -52,12 +51,12 @@ public class CsvServiceImpl implements CsvService {
         this.statementService = statementService;
     }
 
-    private static final Map<Bank, Options> SUPPORTED_BANKS_OPTIONS = new EnumMap<>(Bank.class);
+    private static final Map<Bank, CsvOptions> SUPPORTED_BANKS_OPTIONS = new EnumMap<>(Bank.class);
 
     static {
-        SUPPORTED_BANKS_OPTIONS.put(Bank.BELFIUS, new Options(";", s -> s.startsWith("BE"), "dd/MM/yyyy", 10, 1, 0, 4, 8));
-        SUPPORTED_BANKS_OPTIONS.put(Bank.ING, new Options(";", s -> Character.isDigit(s.charAt(0)), "dd/MM/yyyy", 6, 4, 0, 2, 8));
-        SUPPORTED_BANKS_OPTIONS.put(Bank.KEYTRADE, new Options(";", s -> false, "dd.MM.yyyy", 5, 1, -1, 3, 4));
+        SUPPORTED_BANKS_OPTIONS.put(Bank.BELFIUS, new CsvOptions(";", s -> s.startsWith("BE"), "dd/MM/yyyy", 10, 1, 0, 4, 8));
+        SUPPORTED_BANKS_OPTIONS.put(Bank.ING, new CsvOptions(";", s -> Character.isDigit(s.charAt(0)), "dd/MM/yyyy", 6, 4, 0, 2, 8));
+        SUPPORTED_BANKS_OPTIONS.put(Bank.KEYTRADE, new CsvOptions(";", s -> false, "dd.MM.yyyy", 5, 1, -1, 3, 4));
     }
 
     @NotNull
@@ -72,12 +71,12 @@ public class CsvServiceImpl implements CsvService {
             String line;
 
             while ((line = br.readLine()) != null && bankAccount == null) {
-                for (Entry<Bank, Options> entry : SUPPORTED_BANKS_OPTIONS.entrySet()) {
-                    String[] row = line.split(entry.getValue().cvsSplitBy);
-                    if (row.length > 0 && entry.getValue().identifyStatementPredicate.test(line)) {
-                        bankAccount = bankAccountMap.get(row[entry.getValue().rowNumberFromAccount]);
+                for (Entry<Bank, CsvOptions> entry : SUPPORTED_BANKS_OPTIONS.entrySet()) {
+                    String[] row = line.split(entry.getValue().getCvsSplitBy());
+                    if (row.length > 0 && entry.getValue().getIdentifyStatementPredicate().test(line)) {
+                        bankAccount = bankAccountMap.get(row[entry.getValue().getRowNumberFromAccount()]);
                         if (bankAccount == null) {
-                            bankAccount = new BankAccount(person, entry.getKey(), row[entry.getValue().rowNumberFromAccount]);
+                            bankAccount = new BankAccount(person, entry.getKey(), row[entry.getValue().getRowNumberFromAccount()]);
                         }
                     }
                 }
@@ -105,8 +104,7 @@ public class CsvServiceImpl implements CsvService {
                 .collect(Collectors.toList()));
     }
 
-
-    private Collection<Statement> uploadCsv(CsvFile csvFile, Options options) {
+    private Collection<Statement> uploadCsv(CsvFile csvFile, CsvOptions options) {
         String line;
 
         Collection<Statement> statementList = new ArrayList<>();
@@ -114,19 +112,19 @@ public class CsvServiceImpl implements CsvService {
         try (BufferedReader br = new BufferedReader(new FileReader(csvFile.getFileUrl()))) {
             while ((line = br.readLine()) != null) {
 
-                String[] row = line.split(options.cvsSplitBy);
+                String[] row = line.split(options.getCvsSplitBy());
 
-                if (row.length > 0 && options.identifyStatementPredicate.test(line)) {
-                    String bedragString = this.getValueFromStringArrayAtPosition(row, options.rowNumberAmount);
+                if (row.length > 0 && options.getIdentifyStatementPredicate().test(line)) {
+                    String bedragString = this.getValueFromStringArrayAtPosition(row, options.getRowNumberAmount());
                     if (!StringUtils.isEmpty(bedragString)) {
 
                         BigDecimal amount = new BigDecimal(PATTERN.matcher(bedragString).replaceAll(Matcher.quoteReplacement(".")));
-                        LocalDate date = LocalDate.parse(this.getValueFromStringArrayAtPosition(row, options.rowNumberDate), DateTimeFormatter.ofPattern(options.datePattern));
-                        String toAccount = StringUtils.replace(this.getValueFromStringArrayAtPosition(row, options.rowNumberToAccount), " ", "");
+                        LocalDate date = LocalDate.parse(this.getValueFromStringArrayAtPosition(row, options.getRowNumberDate()), DateTimeFormatter.ofPattern(options.getDatePattern()));
+                        String toAccount = StringUtils.replace(this.getValueFromStringArrayAtPosition(row, options.getRowNumberToAccount()), " ", "");
 
                         Statement statement = new Statement(csvFile.getBankAccount(), toAccount, amount, date);
 
-                        statement.setDescription(this.getValueFromStringArrayAtPosition(row, options.rowNumberDescription));
+                        statement.setDescription(this.getValueFromStringArrayAtPosition(row, options.getRowNumberDescription()));
                         statement.setOriginatingAccount(csvFile.getBankAccount());
                         statement.setDestinationAccountNumber(toAccount);
                         statement.setCsvLine(line);
@@ -148,37 +146,5 @@ public class CsvServiceImpl implements CsvService {
     private String getValueFromStringArrayAtPosition(String[] stringArray, int position) {
         //Trims ALL WHITESPACE (e.g.: also specials characters as found in KEYTRADE-csv files)
         return CharMatcher.whitespace().trimFrom(stringArray[position]);
-    }
-
-    private static class Options {
-        private final String cvsSplitBy;
-        private final Predicate<String> identifyStatementPredicate;
-        private final String datePattern;
-
-        private final int rowNumberAmount;
-        private final int rowNumberDate;
-        private final int rowNumberFromAccount;
-        private final int rowNumberToAccount;
-        private final int rowNumberDescription;
-
-        Options(
-                String cvsSplitBy,
-                Predicate<String> identifyStatementPredicate,
-                String datePattern,
-                int rowNumberAmount,
-                int rowNumberDate,
-                int rowNumberFromAccount,
-                int rowNumberToAccount,
-                int rowNumberDescription
-        ) {
-            this.cvsSplitBy = cvsSplitBy;
-            this.identifyStatementPredicate = identifyStatementPredicate;
-            this.datePattern = datePattern;
-            this.rowNumberAmount = rowNumberAmount;
-            this.rowNumberDate = rowNumberDate;
-            this.rowNumberToAccount = rowNumberToAccount;
-            this.rowNumberDescription = rowNumberDescription;
-            this.rowNumberFromAccount = rowNumberFromAccount;
-        }
     }
 }
