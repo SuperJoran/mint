@@ -10,12 +10,12 @@ import javax.persistence.*
 @Entity
 @Table(name = "T_CATEGORY_GROUP")
 class CategoryGroup(
-        var name: String
+        var name: String,
+        @Column(nullable = false, name = "CATEGORY_TYPE")
+        @Enumerated(EnumType.STRING)
+        var categoryType: CategoryType
 ) : DomainObject() {
 
-    @Column(nullable = false, name = "CATEGORY_TYPE")
-    @Enumerated(EnumType.STRING)
-    var categoryType: CategoryType? = null
 
     @OneToMany(mappedBy = "categoryGroup", fetch = FetchType.EAGER, cascade = [(CascadeType.ALL)], orphanRemoval = true)
     private val categoryList: List<Category> = ArrayList()

@@ -10,7 +10,7 @@ class DestinationCategory : Serializable {
         @Column
         var destinationAccountNumber: String? = null;
         @ManyToOne
-        @JoinColumn
-        var categoryUuid: Category? = null
+        @JoinColumn(name = "categoryUuid")
+        var category: Category? = null
 
 }

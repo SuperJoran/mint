@@ -10,25 +10,20 @@ import javax.persistence.*
  */
 @Entity
 @Table(name = "T_STATEMENT")
-class Statement : DomainObject() {
+class Statement(
+        @ManyToOne(cascade = [(CascadeType.MERGE), (CascadeType.PERSIST)])
+        @JoinColumn(name = "ORIGINATINGACCOUNT_UUID")
+        var originatingAccount: BankAccount,
 
-    @ManyToOne(cascade = arrayOf(CascadeType.MERGE, CascadeType.PERSIST))
-    @JoinColumn(name = "ORIGINATINGACCOUNT_UUID")
-    var originatingAccount: BankAccount? = null
+        @Column(name = "DESTINATIONACCOUNT_NUMBER")
+        var destinationAccountNumber: String,
 
-    @Column(name = "DESTINATIONACCOUNT_NUMBER")
-    var destinationAccountNumber: String? = null
+        var amount: BigDecimal,
 
-    var date: LocalDate? = null
-    var amount: BigDecimal? = null
-        get() {
-            if (field == null) {
-                this.amount = BigDecimal.ZERO
-            }
-            return field
-        }
+        var date: LocalDate
+) : DomainObject() {
 
-    @ManyToOne(cascade = arrayOf(CascadeType.MERGE))
+    @ManyToOne(cascade = [(CascadeType.MERGE)])
     @JoinColumn(name = "CATEGORY_UUID")
     var category: Category? = null
 

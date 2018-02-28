@@ -9,6 +9,7 @@ import be.superjoran.mint.domain.searchresults.CsvFile;
 import com.google.common.base.CharMatcher;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
@@ -30,6 +31,8 @@ import java.util.function.Predicate;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+
+import static java.util.Objects.requireNonNull;
 
 /**
  * Created by jorandeboever
@@ -57,8 +60,9 @@ public class CsvServiceImpl implements CsvService {
         SUPPORTED_BANKS_OPTIONS.put(Bank.KEYTRADE, new Options(";", s -> false, "dd.MM.yyyy", 5, 1, -1, 3, 4));
     }
 
+    @NotNull
     @Override
-    public BankAccount identifyBankAccount(String fileUrl, Person person) {
+    public BankAccount identifyBankAccount(String fileUrl, @NotNull Person person) {
         Map<String, BankAccount> bankAccountMap = this.bankAccountService.findAllByOwner(person)
                 .stream()
                 .collect(Collectors.toMap(BankAccount::getNumber, b -> b));
@@ -82,17 +86,20 @@ public class CsvServiceImpl implements CsvService {
         } catch (IOException e) {
             LOG.error(() -> String.format("Exception (%s) caught in identifyBankAccount2: %s", e.getClass().getName(), e.getMessage()), e);
         }
+        //TODO in case of keytrade: bankaccount = null!!
+        requireNonNull(bankAccount);
         return bankAccount;
-
     }
 
+    @NotNull
     @Override
-    public List<CsvFile> identifyCsvFiles(List<? extends File> files, Person person) {
+    public List<CsvFile> identifyCsvFiles(@NotNull List<? extends File> files, @NotNull Person person) {
         return files.stream().map(fileUrl -> new CsvFile(fileUrl, this.identifyBankAccount(fileUrl.getAbsolutePath(), person))).collect(Collectors.toList());
     }
 
+    @NotNull
     @Override
-    public Iterable<Statement> uploadCSVFiles(List<CsvFile> files) {
+    public Iterable<Statement> uploadCSVFiles(@NotNull List<CsvFile> files) {
         return this.statementService.save(files.stream()
                 .flatMap(f -> this.uploadCsv(f, SUPPORTED_BANKS_OPTIONS.get(f.getBankAccount().getBank())).stream())
                 .collect(Collectors.toList()));
@@ -113,22 +120,17 @@ public class CsvServiceImpl implements CsvService {
                     String bedragString = this.getValueFromStringArrayAtPosition(row, options.rowNumberAmount);
                     if (!StringUtils.isEmpty(bedragString)) {
 
-                        Statement statement = new Statement();
-                        statement.setAmount(new BigDecimal(PATTERN.matcher(bedragString).replaceAll(Matcher.quoteReplacement("."))));
-
+                        BigDecimal amount = new BigDecimal(PATTERN.matcher(bedragString).replaceAll(Matcher.quoteReplacement(".")));
                         LocalDate date = LocalDate.parse(this.getValueFromStringArrayAtPosition(row, options.rowNumberDate), DateTimeFormatter.ofPattern(options.datePattern));
-                        statement.setDate(date);
-
-
                         String toAccount = StringUtils.replace(this.getValueFromStringArrayAtPosition(row, options.rowNumberToAccount), " ", "");
 
-                        String fromAccount = StringUtils.replace(this.getValueFromStringArrayAtPosition(row, options.rowNumberFromAccount), " ", "");
+                        Statement statement = new Statement(csvFile.getBankAccount(), toAccount, amount, date);
 
                         statement.setDescription(this.getValueFromStringArrayAtPosition(row, options.rowNumberDescription));
                         statement.setOriginatingAccount(csvFile.getBankAccount());
                         statement.setDestinationAccountNumber(toAccount);
-
                         statement.setCsvLine(line);
+
                         statementList.add(statement);
                     }
 

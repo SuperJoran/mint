@@ -11,6 +11,7 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 import java.util.Map;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Component
@@ -18,7 +19,7 @@ public class AssignCategoryStatementProcessor implements ItemProcessor<Statement
     private static final Logger LOG = LogManager.getLogger();
 
     private final DestinationCategoryService destinationCategoryService;
-    private Map<String, String> destinationAccountToCategoryMap;
+    private Map<String, DestinationCategory> destinationAccountToCategoryMap;
 
     public AssignCategoryStatementProcessor(DestinationCategoryService destinationCategoryService) {
         this.destinationCategoryService = destinationCategoryService;
@@ -30,7 +31,7 @@ public class AssignCategoryStatementProcessor implements ItemProcessor<Statement
                 .stream()
                 .collect(Collectors.toMap(
                         DestinationCategory::getDestinationAccountNumber,
-                        DestinationCategory::getDestinationAccountNumber
+                        Function.identity()
                 ));
     }
 
@@ -39,9 +40,9 @@ public class AssignCategoryStatementProcessor implements ItemProcessor<Statement
         LOG.debug(() -> String.format("Processing statement with uuid %s", statement.getUuid()));
 
         if (this.destinationAccountToCategoryMap.containsKey(statement.getDestinationAccountNumber())) {
-            String categoryUuid = this.destinationAccountToCategoryMap.get(statement.getDestinationAccountNumber());
-            LOG.debug(() -> String.format("Assigning category %s to statement with uuid %s ", "TODO", statement.getUuid()));
-            statement.setCategory(new Category(categoryUuid, ""));
+            Category category = this.destinationAccountToCategoryMap.get(statement.getDestinationAccountNumber()).getCategory();
+            LOG.debug(() -> String.format("Assigning category %s to statement with uuid %s ", category.getName(), statement.getUuid()));
+            statement.setCategory(category);
         }
         return statement;
     }
