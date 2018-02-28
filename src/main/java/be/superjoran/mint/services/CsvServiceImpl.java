@@ -87,7 +87,7 @@ public class CsvServiceImpl implements CsvService {
     }
 
     @Override
-    public List<CsvFile> identifyCsvFiles(List<File> files, Person person) {
+    public List<CsvFile> identifyCsvFiles(List<? extends File> files, Person person) {
         return files.stream().map(fileUrl -> new CsvFile(fileUrl, this.identifyBankAccount(fileUrl.getAbsolutePath(), person))).collect(Collectors.toList());
     }
 
