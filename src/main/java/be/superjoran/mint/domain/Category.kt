@@ -11,17 +11,11 @@ import javax.persistence.Table
  */
 @Entity
 @Table(name = "T_CATEGORY")
-class Category : DomainObject {
+class Category(uuid: String, var name: String) : DomainObject(uuid) {
 
     @ManyToOne(optional = false)
     @JoinColumn(name = "CATEGORY_GROUP_UUID")
     var categoryGroup: CategoryGroup? = null
-
-    var name: String? = null
-
-    constructor()
-
-    constructor(uuid: String) : super(uuid)
 
     override fun getDisplayValue(): String {
         return this.toString()
@@ -29,9 +23,5 @@ class Category : DomainObject {
 
     override fun toString(): String {
         return String.format("%s - %s", this.categoryGroup!!.name, this.name)
-    }
-
-    companion object {
-        private val serialVersionUID = -163498981511624588L
     }
 }

@@ -41,7 +41,7 @@ public class AssignCategoryStatementProcessor implements ItemProcessor<Statement
         if (this.destinationAccountToCategoryMap.containsKey(statement.getDestinationAccountNumber())) {
             String categoryUuid = this.destinationAccountToCategoryMap.get(statement.getDestinationAccountNumber());
             LOG.debug(() -> String.format("Assigning category %s to statement with uuid %s ", "TODO", statement.getUuid()));
-            statement.setCategory(new Category(categoryUuid));
+            statement.setCategory(new Category(categoryUuid, ""));
         }
         return statement;
     }

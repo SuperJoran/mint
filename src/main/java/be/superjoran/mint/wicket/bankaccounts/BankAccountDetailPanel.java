@@ -3,21 +3,30 @@ package be.superjoran.mint.wicket.bankaccounts;
 import be.superjoran.common.form.BaseForm;
 import be.superjoran.common.form.FormComponentBuilderFactory;
 import be.superjoran.common.link.LinkBuilderFactory;
-import be.superjoran.mint.domain.BankAccount;
+import be.superjoran.mint.domain.Bank;
+import be.superjoran.mint.domain.searchresults.BankAccountCandidate;
 import be.superjoran.mint.services.BankAccountService;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.form.AjaxSubmitLink;
+import org.apache.wicket.bean.validation.Property;
+import org.apache.wicket.bean.validation.PropertyValidator;
+import org.apache.wicket.feedback.ExactLevelFeedbackMessageFilter;
+import org.apache.wicket.feedback.FeedbackMessage;
+import org.apache.wicket.feedback.FencedFeedbackPanel;
 import org.apache.wicket.markup.html.panel.GenericPanel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.LambdaModel;
 import org.apache.wicket.model.ResourceModel;
+import org.apache.wicket.model.util.ListModel;
+import org.apache.wicket.spring.injection.annot.SpringBean;
 import org.danekja.java.util.function.serializable.SerializableBiConsumer;
 import org.jetbrains.annotations.NotNull;
 
-public class BankAccountDetailPanel extends GenericPanel<BankAccount> {
+public class BankAccountDetailPanel extends GenericPanel<BankAccountCandidate> {
+    @SpringBean
     private BankAccountService bankAccountService;
 
-    public BankAccountDetailPanel(String id, IModel<BankAccount> model) {
+    public BankAccountDetailPanel(String id, IModel<BankAccountCandidate> model) {
         super(id, model);
     }
 
@@ -26,15 +35,24 @@ public class BankAccountDetailPanel extends GenericPanel<BankAccount> {
     protected void onInitialize() {
         super.onInitialize();
 
-        BaseForm<BankAccount> form = new BaseForm<>("form", this.getModel());
+
+        BaseForm<BankAccountCandidate> form = new BaseForm<>("form", this.getModel());
+        form.add(new FencedFeedbackPanel("feedbackErrors", this, new ExactLevelFeedbackMessageFilter(FeedbackMessage.ERROR)));
 
         FormComponentBuilderFactory.textField()
                 .body(new ResourceModel("number"))
-                .attach(form, "number", LambdaModel.of(form.getModel(), BankAccount::getNumber, BankAccount::setNumber));
+                .configure(c -> c.add(new PropertyValidator<>(new Property(BankAccountCandidate.class, "number"))))
+                .attach(form, "number", LambdaModel.of(form.getModel(), BankAccountCandidate::getNumber, BankAccountCandidate::setNumber));
 
         FormComponentBuilderFactory.textField()
                 .body(new ResourceModel("name"))
-                .attach(form, "name", LambdaModel.of(form.getModel(), BankAccount::getName, BankAccount::setName));
+                .configure(c -> c.add(new PropertyValidator<>(new Property(BankAccountCandidate.class, "name"))))
+                .attach(form, "name", LambdaModel.of(form.getModel(), BankAccountCandidate::getName, BankAccountCandidate::setName));
+
+        FormComponentBuilderFactory.<Bank>dropDown()
+                .usingDefaults()
+                .configure(c -> c.add(new PropertyValidator<>(new Property(BankAccountCandidate.class, "bank"))))
+                .attach(form, "bank", LambdaModel.of(form.getModel(), BankAccountCandidate::getBank, BankAccountCandidate::setBank), new ListModel<>(Bank.Companion.getBanks()));
 
         LinkBuilderFactory.submitLink(saveAction())
                 .attach(form, "save");
@@ -46,7 +64,7 @@ public class BankAccountDetailPanel extends GenericPanel<BankAccount> {
     private static SerializableBiConsumer<AjaxRequestTarget, AjaxSubmitLink> saveAction() {
         return (ajaxRequestTarget, components) -> {
             BankAccountDetailPanel parent = components.findParent(BankAccountDetailPanel.class);
-            parent.bankAccountService.save(parent.getModelObject());
+            parent.bankAccountService.createOrUpdate(parent.getModelObject());
         };
     }
 }

@@ -3,6 +3,8 @@ package be.superjoran.mint.domain
 import javax.persistence.Column
 import javax.persistence.Entity
 import javax.persistence.Table
+import javax.validation.constraints.NotBlank
+import javax.validation.constraints.NotNull
 
 /**
  * Created by Ghostwritertje
@@ -10,19 +12,16 @@ import javax.persistence.Table
  */
 @Table(name = "T_PERSON")
 @Entity
-class Person : DomainObject {
-
-    @Column(unique = true, nullable = false)
-    var username: String? = null
-
-    @Column(nullable = false, name = "password")
-    var password: String? = null
-
-    constructor() {}
-
-    constructor(username: String) {
-        this.username = username
-    }
+class Person(
+        @Column(unique = true, nullable = false)
+        @NotNull
+        @NotBlank
+        var username: String,
+        @Column(nullable = false, name = "password")
+        @NotNull
+        @NotBlank
+        var password: String
+) : DomainObject() {
 
     override fun toString(): String {
         return String.format("Person with name '%s'", this.username)

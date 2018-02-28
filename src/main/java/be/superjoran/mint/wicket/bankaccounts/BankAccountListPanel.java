@@ -5,6 +5,7 @@ import be.superjoran.common.link.LinkBuilderFactory;
 import be.superjoran.common.model.DomainObjectListModel;
 import be.superjoran.mint.domain.BankAccount;
 import be.superjoran.mint.domain.Person;
+import be.superjoran.mint.domain.searchresults.BankAccountCandidate;
 import be.superjoran.mint.domain.searchresults.DestinationCategory;
 import be.superjoran.mint.services.BankAccountService;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.LambdaColumn;
@@ -28,7 +29,7 @@ public class BankAccountListPanel extends GenericPanel<Person> {
     protected void onInitialize() {
         super.onInitialize();
 
-        LinkBuilderFactory.pageLink(() -> new BankAccountDetailPage(Model.of(new BankAccount(this.getModelObject()))))
+        LinkBuilderFactory.pageLink(() -> new BankAccountDetailPage(Model.of(new BankAccountCandidate(this.getModelObject()))))
                 .attach(this, "new");
 
         DataTableBuilderFactory.<BankAccount, String>simple()

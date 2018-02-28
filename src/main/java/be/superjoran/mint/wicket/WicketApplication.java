@@ -11,6 +11,7 @@ import org.apache.wicket.Page;
 import org.apache.wicket.RestartResponseAtInterceptPageException;
 import org.apache.wicket.Session;
 import org.apache.wicket.authorization.IAuthorizationStrategy.AllowAllAuthorizationStrategy;
+import org.apache.wicket.bean.validation.BeanValidationConfiguration;
 import org.apache.wicket.protocol.http.WebApplication;
 import org.apache.wicket.request.Request;
 import org.apache.wicket.request.Response;
@@ -26,6 +27,7 @@ public class WicketApplication extends WebApplication{
     @Override
     protected void init() {
         super.init();
+        new BeanValidationConfiguration().configure(this);
 
         this.getSecuritySettings().setAuthorizationStrategy(new AllowAllAuthorizationStrategy() {
             @Override

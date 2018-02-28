@@ -10,7 +10,7 @@ import javax.persistence.*
  */
 @Entity
 @Table(name = "T_STATEMENT")
-class Statement : DomainObject {
+class Statement : DomainObject() {
 
     @ManyToOne(cascade = arrayOf(CascadeType.MERGE, CascadeType.PERSIST))
     @JoinColumn(name = "ORIGINATINGACCOUNT_UUID")
@@ -37,5 +37,4 @@ class Statement : DomainObject {
     @Column(name = "CSV_LINE")
     var csvLine: String? = null
 
-    constructor()
 }

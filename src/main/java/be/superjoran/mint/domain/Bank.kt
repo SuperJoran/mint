@@ -1,6 +1,7 @@
 package be.superjoran.mint.domain
 
 import java.io.Serializable
+import java.util.*
 
 /**
  * Created by Jorandeboever
@@ -15,6 +16,13 @@ enum class Bank : Display, Serializable {
 
     override fun getDisplayValue(): String {
         return this.name
+    }
+
+
+    companion object {
+        public fun getBanks(): List<Bank> {
+            return Arrays.asList(Bank.BELFIUS, Bank.KEYTRADE, Bank.ING)
+        }
     }
 
 }

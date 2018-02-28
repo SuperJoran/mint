@@ -42,9 +42,9 @@ public class StatementListPanel extends GenericPanel<List<Statement>> {
     private CategoryService categoryService;
 
     private final IModel<List<Statement>> selectedStatementsModel;
-    private final Model<Category> chosenCategoryModel;
+    private final IModel<Category> chosenCategoryModel;
     private final IModel<List<Statement>> filteredStatementsModel;
-    private Model<String> searchModel;
+    private final IModel<String> searchModel;
 
     public StatementListPanel(String id, IModel<List<Statement>> model) {
         super(id, model);

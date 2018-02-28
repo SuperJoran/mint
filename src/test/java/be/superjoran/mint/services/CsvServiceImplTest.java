@@ -31,9 +31,8 @@ public class CsvServiceImplTest {
     @Test
     public void identifyBankAccount_BELFIUS() {
 
-        Person person = new Person("test user 2");
-        BankAccount bankAccount1 = new BankAccount();
-        bankAccount1.setNumber("BE08 0321 0249 2813");
+        Person person = new Person("test user 2", "test password");
+        BankAccount bankAccount1 = new BankAccount(person, "BE08 0321 0249 2813");
 
         when(this.bankAccountService.findAllByOwner(any()))
                 .thenReturn(Collections.singletonList(bankAccount1));
@@ -47,7 +46,7 @@ public class CsvServiceImplTest {
     @Test
     public void uploadCSVFile_BELFIUS() {
 
-        Person person = new Person("test user 2");
+        Person person = new Person("test user 2", "test password 2");
 
         when(this.bankAccountService.findAllByOwner(any()))
                 .thenReturn(Collections.emptyList());
@@ -62,11 +61,11 @@ public class CsvServiceImplTest {
                 .hasSize(5)
                 .extracting(Statement::getAmount, Statement::getDate, Statement::getDestinationAccountNumber)
                 .containsExactlyInAnyOrder(
-                        new Tuple(new BigDecimal("21.00"), LocalDate.of(2017,12,12), "BE72123410567316"),
-                        new Tuple(new BigDecimal("47.50"), LocalDate.of(2017,12,9), "BE72123410567316"),
-                        new Tuple(new BigDecimal("69.90"), LocalDate.of(2017,12,9), "BE72123410567316"),
-                        new Tuple(new BigDecimal("-10.00"), LocalDate.of(2017,12,8), "BE57987417779035"),
-                        new Tuple(new BigDecimal("-20.00"), LocalDate.of(2017,12,8), "BE57987417779035")
+                        new Tuple(new BigDecimal("21.00"), LocalDate.of(2017, 12, 12), "BE72123410567316"),
+                        new Tuple(new BigDecimal("47.50"), LocalDate.of(2017, 12, 9), "BE72123410567316"),
+                        new Tuple(new BigDecimal("69.90"), LocalDate.of(2017, 12, 9), "BE72123410567316"),
+                        new Tuple(new BigDecimal("-10.00"), LocalDate.of(2017, 12, 8), "BE57987417779035"),
+                        new Tuple(new BigDecimal("-20.00"), LocalDate.of(2017, 12, 8), "BE57987417779035")
                 );
     }
 

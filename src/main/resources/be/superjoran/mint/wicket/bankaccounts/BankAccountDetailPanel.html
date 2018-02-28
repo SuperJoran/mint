@@ -5,13 +5,23 @@
     <h1>New Bankaccount</h1>
 
     <form wicket:id="form">
+        <div wicket:id="feedbackErrors"></div>
         <div class="form-group">
             <label wicket:id="number-label" for="number">Iban number: </label>
             <input wicket:id="number" type="text" class="form-control" id="number">
+            <label wicket:id="number-read"></label>
+
         </div>
         <div class="form-group">
             <label wicket:id="name-label" for="name">Name:</label>
             <input wicket:id="name" type="text" class="form-control" id="name">
+            <label wicket:id="name-read"></label>
+        </div>
+
+        <div class="form-group">
+            <label wicket:id="bank-label" for="bank">Bank:</label>
+            <select wicket:id="bank" class="form-control" id="bank"></select>
+            <label wicket:id="bank-read"></label>
         </div>
 
         <button type="submit" wicket:id="save" class="btn btn-primary">Save</button>

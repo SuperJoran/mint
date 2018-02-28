@@ -1,12 +1,12 @@
 package be.superjoran.mint.wicket.bankaccounts;
 
-import be.superjoran.mint.domain.BankAccount;
+import be.superjoran.mint.domain.searchresults.BankAccountCandidate;
 import be.superjoran.mint.wicket.BasePage;
 import org.apache.wicket.model.IModel;
 
-public class BankAccountDetailPage extends BasePage<BankAccount> {
+public class BankAccountDetailPage extends BasePage<BankAccountCandidate> {
 
-    public BankAccountDetailPage(IModel<BankAccount> model) {
+    public BankAccountDetailPage(IModel<BankAccountCandidate> model) {
         super(model);
     }
 

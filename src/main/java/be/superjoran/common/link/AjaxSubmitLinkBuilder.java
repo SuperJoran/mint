@@ -30,6 +30,12 @@ public class AjaxSubmitLinkBuilder extends AjaxLinkBuilderSupport<AjaxSubmitLink
         }
 
         @Override
+        protected void onError(AjaxRequestTarget target) {
+            super.onError(target);
+            target.add(this.findParent(BaseForm.class));
+        }
+
+        @Override
         protected void onAfterSubmit(AjaxRequestTarget target) {
             super.onAfterSubmit(target);
             BaseForm<?> parent = this.findParent(BaseForm.class);

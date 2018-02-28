@@ -9,9 +9,9 @@ import javax.persistence.*
  */
 @Entity
 @Table(name = "T_CATEGORY_GROUP")
-class CategoryGroup : DomainObject {
-
-    var name: String? = null
+class CategoryGroup(
+        var name: String
+) : DomainObject() {
 
     @Column(nullable = false, name = "CATEGORY_TYPE")
     @Enumerated(EnumType.STRING)
@@ -19,12 +19,6 @@ class CategoryGroup : DomainObject {
 
     @OneToMany(mappedBy = "categoryGroup", fetch = FetchType.EAGER, cascade = [(CascadeType.ALL)], orphanRemoval = true)
     private val categoryList: List<Category> = ArrayList()
-
-    constructor() {}
-
-    constructor(name: String) {
-        this.name = name
-    }
 
     fun getCategoryList(): List<Category> {
         return this.categoryList
@@ -35,7 +29,7 @@ class CategoryGroup : DomainObject {
     }
 
     override fun toString(): String {
-        return this.name.toString()
+        return this.name
     }
 
 }

@@ -4,12 +4,15 @@ package be.superjoran.mint.wicket.person;
 import be.superjoran.common.form.BaseForm;
 import be.superjoran.common.form.FormComponentBuilderFactory;
 import be.superjoran.mint.domain.Person;
+import be.superjoran.mint.domain.searchresults.PersonCandidate;
 import be.superjoran.mint.services.PersonService;
 import be.superjoran.mint.wicket.BasePage;
 import be.superjoran.mint.wicket.HomePage;
 import org.apache.log4j.Logger;
 import org.apache.wicket.authentication.IAuthenticationStrategy;
 import org.apache.wicket.authroles.authentication.AuthenticatedWebSession;
+import org.apache.wicket.bean.validation.Property;
+import org.apache.wicket.bean.validation.PropertyValidator;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.form.Form;
@@ -26,30 +29,30 @@ import java.util.Optional;
  * Created by Jorandeboever
  * Date: 01-Oct-16.
  */
-public class LoginPage extends BasePage<Person> implements UnAuthorizedAllowed {
+public class LoginPage extends BasePage<PersonCandidate> implements UnAuthorizedAllowed {
     @SpringBean
     private PersonService personService;
 
     private static final Logger logger = Logger.getLogger(LoginPage.class);
 
     public LoginPage() {
-        super(new Model<>(new Person()));
+        super(new Model<>(new PersonCandidate()));
     }
 
     @Override
     protected void onInitialize() {
         super.onInitialize();
 
-        Form<Person> form = new LoginForm("form", this.getModel());
+        Form<PersonCandidate> form = new LoginForm("form", this.getModel());
         this.add(form);
     }
 
 
-    class LoginForm extends BaseForm<Person> {
+    class LoginForm extends BaseForm<PersonCandidate> {
 
         private final IModel<Boolean> rememberMe;
 
-        public LoginForm(String id, IModel<Person> model) {
+        public LoginForm(String id, IModel<PersonCandidate> model) {
             super(id, model);
             this.rememberMe = new Model<>(true);
         }
@@ -68,14 +71,15 @@ public class LoginPage extends BasePage<Person> implements UnAuthorizedAllowed {
                     .usingDefaults()
                     .required()
                     .body(new ResourceModel("username"))
-                    .attach(this, "username", LambdaModel.of(this.getModel(), Person::getUsername, Person::setUsername));
+                    .configure(c -> c.add(new PropertyValidator<>(new Property(Person.class, "username"))))
+                    .attach(this, "username", LambdaModel.of(this.getModel(), PersonCandidate::getUsername, PersonCandidate::setUsername));
 
             FormComponentBuilderFactory.password()
                     .usingDefaults()
                     .switchable(false)
                     .required()
                     .body(new ResourceModel("password"))
-                    .attach(this, "password", LambdaModel.of(this.getModel(), Person::getPassword, Person::setPassword));
+                    .attach(this, "password", LambdaModel.of(this.getModel(), PersonCandidate::getPassword, PersonCandidate::setPassword));
 
             WebMarkupContainer rememberMeContainer = new WebMarkupContainer("rememberMeContainer");
             this.add(rememberMeContainer);

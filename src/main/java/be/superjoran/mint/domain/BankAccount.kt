@@ -3,6 +3,7 @@ package be.superjoran.mint.domain
 import org.hibernate.annotations.Formula
 import java.math.BigDecimal
 import javax.persistence.*
+import javax.validation.constraints.NotNull
 
 /**
  * Created by Jorandeboever
@@ -10,16 +11,18 @@ import javax.persistence.*
  */
 @Entity
 @Table(name = "T_BANKACCOUNT")
-class BankAccount : DomainObject {
+class BankAccount
+(
+        @ManyToOne
+        @JoinColumn(name = "OWNER_UUID")
+        var owner: Person,
 
-    @ManyToOne
-    @JoinColumn(name = "OWNER_UUID")
-    var owner: Person? = null
+        @Column(nullable = false)
+        @NotNull
+        var number: String
+): DomainObject() {
 
-    var bank: Bank? = null
-
-    @Column(nullable = false)
-    var number: String? = null
+    var bank: Bank = Bank.BELFIUS
 
     @Column
     var name: String? = null
@@ -28,16 +31,12 @@ class BankAccount : DomainObject {
     @Access(AccessType.FIELD)
     var balance: BigDecimal? = null
 
-    constructor() {}
-
-    constructor(owner: Person) {
-        this.owner = owner
+    constructor(owner: Person, bank: Bank, number: String) : this(owner, number) {
+        this.bank = bank
     }
 
-    constructor(owner: Person, bank: Bank, number: String) {
-        this.owner = owner
-        this.bank = bank
-        this.number = number
+    constructor(owner: Person, bank: Bank, number: String, name: String?) : this(owner, bank, number) {
+        this.name = name
     }
 
     override fun getDisplayValue(): String? {
@@ -45,6 +44,6 @@ class BankAccount : DomainObject {
     }
 
     override fun toString(): String {
-        return if (this.name != null) this.name.toString() else this.number.toString()
+        return if (this.name != null) this.name.toString() else this.number
     }
 }
