@@ -11,7 +11,7 @@ interface CsvService {
 
     fun uploadCSVFiles(file: List<CsvFile>): Iterable<Statement>
 
-    fun identifyBankAccount(fileUrl: String?, person: Person): BankAccount
+    fun identifyBankAccount(fileUrl: String?, person: Person): BankAccount?
 
     fun identifyCsvFiles(files: List<File>, person: Person): List<CsvFile>
 }

@@ -31,8 +31,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import static java.util.Objects.requireNonNull;
-
 /**
  * Created by jorandeboever
  * on 18/03/16.
@@ -59,7 +57,6 @@ public class CsvServiceImpl implements CsvService {
         SUPPORTED_BANKS_OPTIONS.put(Bank.KEYTRADE, new CsvOptions(";", s -> false, "dd.MM.yyyy", 5, 1, -1, 3, 4));
     }
 
-    @NotNull
     @Override
     public BankAccount identifyBankAccount(String fileUrl, @NotNull Person person) {
         Map<String, BankAccount> bankAccountMap = this.bankAccountService.findAllByOwner(person)
@@ -85,8 +82,6 @@ public class CsvServiceImpl implements CsvService {
         } catch (IOException e) {
             LOG.error(() -> String.format("Exception (%s) caught in identifyBankAccount2: %s", e.getClass().getName(), e.getMessage()), e);
         }
-        //TODO in case of keytrade: bankaccount = null!!
-        requireNonNull(bankAccount);
         return bankAccount;
     }
 

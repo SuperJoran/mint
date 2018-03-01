@@ -5,4 +5,4 @@ import java.io.File
 
 import java.io.Serializable
 
-class CsvFile(var fileUrl: File, var bankAccount: BankAccount) : Serializable
+class CsvFile(var fileUrl: File, var bankAccount: BankAccount? = null) : Serializable
