@@ -53,7 +53,7 @@ public class UploadCsvStep1Panel extends GenericPanel<List<FileUpload>> {
         BaseForm<List<FileUpload>> form = new BaseForm<>("form", this.getModel());
 
         BootstrapFileInput fileUpload = new BootstrapFileInput("fileUpload", this.getModel());
-        fileUpload.getConfig().maxFileCount(10);
+        fileUpload.getConfig().maxFileCount(20);
         fileUpload.getConfig().allowedFileTypes(Collections.singletonList(".csv"));
         fileUpload.getConfig().showPreview(false);
         fileUpload.getConfig().showUpload(false);

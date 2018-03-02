@@ -26,6 +26,6 @@ public class HomePage extends BasePage<Person> {
         IModel<List<CsvFile>> listIModel = new ListModel<>(null);
         this.add(new UploadCsvStep1Panel("fileUpload", listIModel, this.getModel()));
 
-        this.add(new UploadCsvStep2Panel("fileUploads", listIModel));
+        this.add(new UploadCsvStep2Panel("fileUploads", listIModel, this.getModel()));
     }
 }

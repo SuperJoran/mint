@@ -20,6 +20,5 @@ class StatementServiceImpl(override val dao: StatementDao) : DomainObjectCrudSer
                 .peek { statement -> statement.category = category }
                 .collect(Collectors.toList())
         this.save(list)
-
     }
 }

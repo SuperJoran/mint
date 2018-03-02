@@ -1,8 +1,11 @@
 package be.superjoran.mint.wicket.upload;
 
 import be.superjoran.common.VisibilityBehavior;
+import be.superjoran.common.datatable.ColumnBuilderFactory;
 import be.superjoran.common.datatable.DataTableBuilderFactory;
+import be.superjoran.common.form.BaseForm;
 import be.superjoran.common.link.LinkBuilderFactory;
+import be.superjoran.mint.domain.Person;
 import be.superjoran.mint.domain.searchresults.CsvFile;
 import be.superjoran.mint.services.CsvService;
 import be.superjoran.mint.services.StatementService;
@@ -26,8 +29,11 @@ public class UploadCsvStep2Panel extends GenericPanel<List<CsvFile>> {
     @SpringBean
     private StatementService statementService;
 
-    public UploadCsvStep2Panel(String id, IModel<List<CsvFile>> model) {
+    private final IModel<Person> personIModel;
+
+    public UploadCsvStep2Panel(String id, IModel<List<CsvFile>> model, IModel<Person> personIModel) {
         super(id, model);
+        this.personIModel = personIModel;
     }
 
     @Override
@@ -36,11 +42,15 @@ public class UploadCsvStep2Panel extends GenericPanel<List<CsvFile>> {
 
         this.add(new VisibilityBehavior<>(c -> c.getDefaultModelObject() != null));
 
+        BaseForm<List<CsvFile>> form = new BaseForm<>("form", this.getModel());
+
         DataTableBuilderFactory.<CsvFile, String>simple()
                 .addColumn(new LambdaColumn<>(new ResourceModel("file"), csvFile -> csvFile.getFileUrl().getName()))
                 .addColumn(new LambdaColumn<>(new ResourceModel("bank.account"), csvFile -> csvFile.getBankAccount().getName()))
-                .attach(this, "datatable", this.getModel());
+                .addColumn(ColumnBuilderFactory.custom(new ResourceModel("bank.account"), (id, model) -> new BankAccountDropdownPanel(id, model, this.personIModel)))
+                .attach(form, "datatable", this.getModel());
 
+        this.add(form);
 
         LinkBuilderFactory.ajaxLink(saveStatementsAction())
                 .usingDefaults()

@@ -29,7 +29,4 @@ abstract class DomainObject : Serializable, Cloneable, Display {
     override val displayValue: String?
         get() = this.uuid
 
-    companion object {
-        private const val serialVersionUID = -7793260716425423013L
-    }
 }

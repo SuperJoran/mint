@@ -28,7 +28,7 @@ public class PersistenceConfig {
     }
 
     @Bean
-    public JdbcTemplate jdbcTemplate (DataSource dataSource) {
+    public JdbcTemplate jdbcTemplate(DataSource dataSource) {
         return new JdbcTemplate(dataSource);
     }
 
@@ -53,14 +53,12 @@ public class PersistenceConfig {
     }
 
     @Bean
-    public Flyway flyway (DataSource dataSource){
+    public Flyway flyway(DataSource dataSource) {
         Flyway flyway = new Flyway();
         flyway.setDataSource(dataSource);
         flyway.setBaselineOnMigrate(true);
         return flyway;
     }
-
-
 }
 
 

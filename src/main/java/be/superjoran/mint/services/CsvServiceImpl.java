@@ -13,6 +13,7 @@ import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import javax.validation.Valid;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -93,13 +94,13 @@ public class CsvServiceImpl implements CsvService {
 
     @NotNull
     @Override
-    public Iterable<Statement> uploadCSVFiles(@NotNull List<CsvFile> files) {
+    public Iterable<Statement> uploadCSVFiles(@NotNull @Valid List<CsvFile> files) {
         return this.statementService.save(files.stream()
                 .flatMap(f -> this.uploadCsv(f, SUPPORTED_BANKS_OPTIONS.get(f.getBankAccount().getBank())).stream())
                 .collect(Collectors.toList()));
     }
 
-    private Collection<Statement> uploadCsv(CsvFile csvFile, CsvOptions options) {
+    private Collection<Statement> uploadCsv(@Valid CsvFile csvFile, CsvOptions options) {
         String line;
 
         Collection<Statement> statementList = new ArrayList<>();
