@@ -55,7 +55,7 @@ public class CsvServiceImplTest {
 
         List<CsvFile> list = this.getService().identifyCsvFiles(Collections.singletonList(new File(this.getClass().getResource("BELFIUS_EXAMPLE_CSV_1.csv").getPath())), person);
 
-        Iterable<Statement> statements = this.getService().uploadCSVFiles(list);
+        Iterable<Statement> statements = this.getService().uploadCSVFiles(list, person);
 
         assertThat(statements).isNotEmpty()
                 .hasSize(5)
