@@ -11,7 +11,7 @@ import javax.persistence.*
 @Entity
 @Table(name = "T_STATEMENT")
 class Statement(
-        @ManyToOne(cascade = [(CascadeType.MERGE), (CascadeType.REFRESH)])
+        @ManyToOne(cascade = [(CascadeType.MERGE)])
         @JoinColumn(name = "ORIGINATINGACCOUNT_UUID")
         var originatingAccount: BankAccount,
 

@@ -62,7 +62,7 @@ public class UploadCsvStep2Panel extends GenericPanel<List<CsvFile>> {
     private static SerializableBiConsumer<AjaxRequestTarget, AjaxLink<Object>> saveStatementsAction() {
         return (ajaxRequestTarget, components) -> {
             UploadCsvStep2Panel parent = components.findParent(UploadCsvStep2Panel.class);
-            parent.statementService.save(parent.csvService.uploadCSVFiles(parent.getModelObject()));
+            parent.statementService.save(parent.csvService.uploadCSVFiles(parent.getModelObject(), parent.personIModel.getObject()));
             parent.setModelObject(null);
             ajaxRequestTarget.add(components.getPage());
         };

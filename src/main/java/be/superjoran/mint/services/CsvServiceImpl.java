@@ -28,6 +28,7 @@ import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -94,11 +95,28 @@ public class CsvServiceImpl implements CsvService {
 
     @NotNull
     @Override
-    public Iterable<Statement> uploadCSVFiles(@NotNull @Valid List<CsvFile> files) {
+    public Iterable<Statement> uploadCSVFiles(@NotNull @Valid List<CsvFile> files, @NotNull Person person) {
+        this.persistBankAccounts(files, person);
+
         return this.statementService.save(files.stream()
                 .flatMap(f -> this.uploadCsv(f, SUPPORTED_BANKS_OPTIONS.get(f.getBankAccount().getBank())).stream())
                 .collect(Collectors.toList()));
     }
+
+    private void persistBankAccounts(@Valid @NotNull List<CsvFile> files, @NotNull Person person) {
+        List<BankAccount> uniqueBankAccounts = io.vavr.collection.List.ofAll(files)
+                .map(CsvFile::getBankAccount)
+                .distinctBy(BankAccount::getNumber)
+                .filter(bankAccount -> bankAccount.getUuid() != null)
+                .toJavaList();
+
+        this.bankAccountService.save(uniqueBankAccounts);
+
+        Map<String, BankAccount> updatedBankAccounts = this.bankAccountService.findAllByOwner(person).stream().collect(Collectors.toMap(BankAccount::getNumber, Function.identity()));
+
+        files.forEach(f -> f.setBankAccount(updatedBankAccounts.get(f.getBankAccount().getNumber())));
+    }
+
 
     private Collection<Statement> uploadCsv(@Valid CsvFile csvFile, CsvOptions options) {
         String line;

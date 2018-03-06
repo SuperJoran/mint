@@ -16,6 +16,7 @@
         <wicket.version>8.0.0-M9</wicket.version>
         <wicket-bootstrap.version>2.0.0-M7</wicket-bootstrap.version>
         <spring-batch.version>3.0.8.RELEASE</spring-batch.version>
+        <vavr.version>0.9.2</vavr.version>
     </properties>
 
     <dependencies>
@@ -203,6 +204,17 @@
             <groupId>org.assertj</groupId>
             <artifactId>assertj-core</artifactId>
             <version>3.8.0</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.vavr</groupId>
+            <artifactId>vavr</artifactId>
+            <version>${vavr.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-test</artifactId>
+            <version>${spring-web.version}</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
