@@ -9,7 +9,10 @@ import be.superjoran.mint.domain.DomainObject
 import com.google.common.collect.Lists
 import org.springframework.data.repository.CrudRepository
 import java.util.*
+import javax.validation.ConstraintViolation
+import javax.validation.ConstraintViolationException
 import javax.validation.Validator
+import kotlin.collections.HashSet
 
 abstract class DomainObjectCrudServiceSupport<T : DomainObject> : DomainObjectCrudService<T> {
 
@@ -33,6 +36,12 @@ abstract class DomainObjectCrudServiceSupport<T : DomainObject> : DomainObjectCr
     }
 
     override fun save(objects: Iterable<T>): Iterable<T> {
+        val collection: MutableSet<ConstraintViolation<T>> = HashSet()
+        objects.forEach({ o -> collection.addAll(this.validator.validate(o)) })
+        if (collection.isNotEmpty()) {
+            throw ConstraintViolationException(collection)
+        }
+
         return this.dao.saveAll(objects)
     }
 }
