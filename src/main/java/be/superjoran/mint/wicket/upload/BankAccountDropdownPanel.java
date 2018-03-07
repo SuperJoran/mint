@@ -11,6 +11,7 @@ import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
+import org.apache.wicket.extensions.markup.html.repeater.data.table.DataTable;
 import org.apache.wicket.markup.html.panel.GenericPanel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.LambdaModel;
@@ -28,12 +29,14 @@ public class BankAccountDropdownPanel extends GenericPanel<CsvFile> {
     private static final String BANKACCOUNT_DROPDOWN_ID = "bankaccount";
     private final IModel<Person> personIModel;
     private final IModel<List<BankAccount>> bankAccountListModel;
+    private final Model<BankAccountCandidate> newBankAccountModel;
 
     BankAccountDropdownPanel(String id, IModel<CsvFile> model, IModel<Person> personIModel, IModel<List<BankAccount>> bankAccountListModel) {
         super(id, model);
         this.personIModel = personIModel;
 
         this.bankAccountListModel = bankAccountListModel;
+        this.newBankAccountModel = Model.of(new BankAccountCandidate(this.personIModel.getObject()));
     }
 
     @NotNull
@@ -44,11 +47,11 @@ public class BankAccountDropdownPanel extends GenericPanel<CsvFile> {
     @NotNull
     private static SerializableBiConsumer<AjaxRequestTarget, Component> afterSave() {
         return (ajaxRequestTarget, component) -> {
+            component.findParent(ModalWindow.class).close(ajaxRequestTarget);
             BankAccountDropdownPanel parent = component.findParent(BankAccountDropdownPanel.class);
             parent.bankAccountListModel.setObject(null);
-            ajaxRequestTarget.add(parent.getDropdownContainer());
-
-            component.findParent(ModalWindow.class).close(ajaxRequestTarget);
+            ajaxRequestTarget.add(parent.findParent(DataTable.class));
+            parent.newBankAccountModel.setObject(new BankAccountCandidate(parent.personIModel.getObject()));
         };
     }
 
@@ -82,9 +85,8 @@ public class BankAccountDropdownPanel extends GenericPanel<CsvFile> {
     }
 
     private void modalWindow() {
-        Model<BankAccountCandidate> model = Model.of(new BankAccountCandidate(this.personIModel.getObject()));
-        ModalWindow modalWindow = new ModalWindow(MODAL_WINDOW_ID, model);
-        modalWindow.setContent(new BankAccountDetailPanel(modalWindow.getContentId(), model, afterSave()));
+        ModalWindow modalWindow = new ModalWindow(MODAL_WINDOW_ID, this.newBankAccountModel);
+        modalWindow.setContent(new BankAccountDetailPanel(modalWindow.getContentId(), this.newBankAccountModel, afterSave()));
         this.add(modalWindow);
     }
 }

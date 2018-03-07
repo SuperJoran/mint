@@ -6,6 +6,7 @@ import be.superjoran.common.datatable.DataTableBuilderFactory;
 import be.superjoran.common.form.BaseForm;
 import be.superjoran.common.link.LinkBuilderFactory;
 import be.superjoran.common.model.DomainObjectListModel;
+import be.superjoran.mint.domain.BankAccount;
 import be.superjoran.mint.domain.Person;
 import be.superjoran.mint.domain.searchresults.CsvFile;
 import be.superjoran.mint.services.BankAccountService;
@@ -34,10 +35,12 @@ public class UploadCsvStep2Panel extends GenericPanel<List<CsvFile>> {
     private BankAccountService bankAccountService;
 
     private final IModel<Person> personIModel;
+    private final IModel<List<BankAccount>> bankAccountListModel;
 
     public UploadCsvStep2Panel(String id, IModel<List<CsvFile>> model, IModel<Person> personIModel) {
         super(id, model);
         this.personIModel = personIModel;
+        this.bankAccountListModel = new DomainObjectListModel<>(this.bankAccountService, s -> s.findAllByOwner(this.personIModel.getObject()));
     }
 
     @Override
@@ -51,7 +54,7 @@ public class UploadCsvStep2Panel extends GenericPanel<List<CsvFile>> {
         DataTableBuilderFactory.<CsvFile, String>simple()
                 .addColumn(new LambdaColumn<>(new ResourceModel("file"), csvFile -> csvFile.getFileUrl().getName()))
                 .addColumn(new LambdaColumn<>(new ResourceModel("bank.account"), csvFile -> csvFile.getBankAccount().getName()))
-                .addColumn(ColumnBuilderFactory.custom(new ResourceModel("bank.account"), (id, model) -> new BankAccountDropdownPanel(id, model, this.personIModel, new DomainObjectListModel<>(this.bankAccountService, s -> s.findAllByOwner(this.personIModel.getObject())))))
+                .addColumn(ColumnBuilderFactory.custom(new ResourceModel("bank.account"), (id, model) -> new BankAccountDropdownPanel(id, model, this.personIModel, this.bankAccountListModel)))
                 .attach(form, "datatable", this.getModel());
 
         this.add(form);

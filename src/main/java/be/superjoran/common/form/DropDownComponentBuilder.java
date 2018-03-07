@@ -5,7 +5,6 @@ import de.agilecoders.wicket.extensions.markup.html.bootstrap.form.select.Bootst
 import org.apache.wicket.MarkupContainer;
 import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.model.IModel;
-import org.danekja.java.util.function.serializable.SerializableSupplier;
 
 import java.io.Serializable;
 import java.util.List;
@@ -16,22 +15,15 @@ import java.util.List;
  */
 public class DropDownComponentBuilder<T extends Display & Serializable> extends FormComponentBuilder<DropDownChoice<T>, T, DropDownComponentBuilder<T>> {
 
-    private SerializableSupplier<List<T>> listSupplier;
+    private IModel<List<T>> listModel;
 
     @Override
     public DropDownComponentBuilder<T> attach(MarkupContainer initialParent, String id, IModel<T> model) {
         throw new IllegalArgumentException();
     }
 
-    public DropDownComponentBuilder<T> attach(MarkupContainer initialParent, String id, IModel<T> model, SerializableSupplier<List<T>> listSupplier) {
-        this.listSupplier = listSupplier;
-        super.attach(initialParent, id, model);
-
-        return this.self();
-    }
-
     public DropDownComponentBuilder<T> attach(MarkupContainer initialParent, String id, IModel<T> model, IModel<List<T>> listIModel) {
-        this.listSupplier = listIModel::getObject;
+        this.listModel = listIModel::getObject;
         super.attach(initialParent, id, model);
 
         return this.self();
@@ -42,7 +34,7 @@ public class DropDownComponentBuilder<T extends Display & Serializable> extends 
         BootstrapSelect<T> dropdown = new BootstrapSelect<>(
                 id,
                 model,
-                this.listSupplier.get(),
+                this.listModel,
                 new CustomChoiceRenderer()
         );
         dropdown.setNullValid(true);
