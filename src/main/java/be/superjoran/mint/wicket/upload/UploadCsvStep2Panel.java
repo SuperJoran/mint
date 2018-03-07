@@ -5,8 +5,10 @@ import be.superjoran.common.datatable.ColumnBuilderFactory;
 import be.superjoran.common.datatable.DataTableBuilderFactory;
 import be.superjoran.common.form.BaseForm;
 import be.superjoran.common.link.LinkBuilderFactory;
+import be.superjoran.common.model.DomainObjectListModel;
 import be.superjoran.mint.domain.Person;
 import be.superjoran.mint.domain.searchresults.CsvFile;
+import be.superjoran.mint.services.BankAccountService;
 import be.superjoran.mint.services.CsvService;
 import be.superjoran.mint.services.StatementService;
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -28,6 +30,8 @@ public class UploadCsvStep2Panel extends GenericPanel<List<CsvFile>> {
     private CsvService csvService;
     @SpringBean
     private StatementService statementService;
+    @SpringBean
+    private BankAccountService bankAccountService;
 
     private final IModel<Person> personIModel;
 
@@ -47,7 +51,7 @@ public class UploadCsvStep2Panel extends GenericPanel<List<CsvFile>> {
         DataTableBuilderFactory.<CsvFile, String>simple()
                 .addColumn(new LambdaColumn<>(new ResourceModel("file"), csvFile -> csvFile.getFileUrl().getName()))
                 .addColumn(new LambdaColumn<>(new ResourceModel("bank.account"), csvFile -> csvFile.getBankAccount().getName()))
-                .addColumn(ColumnBuilderFactory.custom(new ResourceModel("bank.account"), (id, model) -> new BankAccountDropdownPanel(id, model, this.personIModel)))
+                .addColumn(ColumnBuilderFactory.custom(new ResourceModel("bank.account"), (id, model) -> new BankAccountDropdownPanel(id, model, this.personIModel, new DomainObjectListModel<>(this.bankAccountService, s -> s.findAllByOwner(this.personIModel.getObject())))))
                 .attach(form, "datatable", this.getModel());
 
         this.add(form);

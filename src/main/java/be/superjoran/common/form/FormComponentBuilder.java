@@ -97,6 +97,7 @@ public abstract class FormComponentBuilder<X extends FormComponent<?>, T extends
     public F attach(MarkupContainer initialParent, String id, IModel<T> model) {
         MarkupContainer parent = Optional.ofNullable(this.containerSupplier).map(supplier -> {
             MarkupContainer newParent = supplier.apply(id + "-container");
+            newParent.setOutputMarkupId(true);
             initialParent.add(newParent);
             return newParent;
         }).orElse(initialParent);

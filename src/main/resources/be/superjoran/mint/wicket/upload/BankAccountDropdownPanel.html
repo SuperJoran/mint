@@ -2,12 +2,15 @@
 <html xmlns:wicket="http://wicket.apache.org" xmlns="http://www.w3.org/1999/xhtml">
 <body>
 <wicket:panel>
-    <div class="form-group">
+    <div wicket:id="bankaccount-container" class="form-group">
         <label wicket:id="bankaccount-label" for="bankaccount">Bankaccount:</label>
         <select wicket:id="bankaccount" class="form-control" id="bankaccount"></select>
         <label wicket:id="bankaccount-read"></label>
     </div>
 
+    <div wicket:id="modal"></div>
+
+    <button wicket:id="new"></button>
 </wicket:panel>
 </body>
 </html>

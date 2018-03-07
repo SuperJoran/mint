@@ -80,12 +80,7 @@
             <version>8.0</version>
             <scope>provided</scope>
         </dependency>
-        <dependency>
-            <groupId>javax.validation</groupId>
-            <artifactId>validation-api</artifactId>
-            <version>2.0.1.Final</version>
-            <scope>compile</scope>
-        </dependency>
+
         <dependency>
             <groupId>org.hibernate</groupId>
             <artifactId>hibernate-entitymanager</artifactId>
@@ -163,6 +158,19 @@
             <artifactId>hibernate-validator</artifactId>
             <version>6.0.5.Final</version>
             <scope>compile</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.tomcat</groupId>
+            <artifactId>tomcat-el-api</artifactId>
+            <version>9.0.1</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.tomcat</groupId>
+            <artifactId>tomcat-jasper-el</artifactId>
+            <version>9.0.1</version>
+            <scope>test</scope>
         </dependency>
 
         <dependency>

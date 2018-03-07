@@ -4,8 +4,8 @@ import java.io.Serializable
 import javax.validation.constraints.NotEmpty
 
 class PersonCandidate : Serializable {
-    @NotEmpty
+    @get:NotEmpty
     var username: String? = null
-    @NotEmpty
+    @get:NotEmpty
     var password: String? = null
 }

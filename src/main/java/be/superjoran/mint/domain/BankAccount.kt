@@ -4,6 +4,7 @@ import org.hibernate.annotations.Formula
 import java.math.BigDecimal
 import javax.persistence.*
 import javax.validation.constraints.NotNull
+import javax.validation.constraints.Pattern
 
 /**
  * Created by Jorandeboever
@@ -18,7 +19,7 @@ class BankAccount
         var owner: Person,
 
         @Column(nullable = false)
-        @NotNull
+        @get:NotNull @get:Pattern(regexp = "[A-Z]{2}[0-9]{2}(\\s[0-9]{4}){3}")
         var number: String
 ): DomainObject() {
 

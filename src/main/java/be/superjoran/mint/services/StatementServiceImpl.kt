@@ -7,9 +7,13 @@ import be.superjoran.mint.domain.Person
 import be.superjoran.mint.domain.Statement
 import org.springframework.stereotype.Service
 import java.util.stream.Collectors
+import javax.validation.Validator
 
 @Service
-class StatementServiceImpl(override val dao: StatementDao) : DomainObjectCrudServiceSupport<Statement>(), StatementService {
+class StatementServiceImpl(
+        override val dao: StatementDao,
+        override val validator: Validator
+) : DomainObjectCrudServiceSupport<Statement>(), StatementService {
 
     override fun findAllByOwner(owner: Person): List<Statement> {
         return this.dao.findAllByOriginatingAccount_Owner(owner)

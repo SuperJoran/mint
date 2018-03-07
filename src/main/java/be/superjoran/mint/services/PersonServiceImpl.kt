@@ -7,9 +7,13 @@ import be.superjoran.mint.domain.searchresults.PersonCandidate
 import be.superjoran.utilities.PasswordUtility
 import org.springframework.stereotype.Service
 import java.util.Objects.requireNonNull
+import javax.validation.Validator
 
 @Service
-class PersonServiceImpl(override val dao: PersonDao) : DomainObjectCrudServiceSupport<Person>(), PersonService {
+class PersonServiceImpl(
+        override val dao: PersonDao,
+        override val validator: Validator
+) : DomainObjectCrudServiceSupport<Person>(), PersonService {
 
 
     override fun create(`object`: PersonCandidate): Person {

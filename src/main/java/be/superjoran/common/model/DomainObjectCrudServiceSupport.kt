@@ -9,10 +9,12 @@ import be.superjoran.mint.domain.DomainObject
 import com.google.common.collect.Lists
 import org.springframework.data.repository.CrudRepository
 import java.util.*
+import javax.validation.Validator
 
 abstract class DomainObjectCrudServiceSupport<T : DomainObject> : DomainObjectCrudService<T> {
 
     protected abstract val dao: CrudRepository<T, String>
+    protected abstract val validator: Validator
 
     override fun findOne(id: String): Optional<T> {
         return this.dao.findById(id)

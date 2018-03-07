@@ -6,6 +6,7 @@ import be.superjoran.common.link.LinkBuilderFactory;
 import be.superjoran.mint.domain.Bank;
 import be.superjoran.mint.domain.searchresults.BankAccountCandidate;
 import be.superjoran.mint.services.BankAccountService;
+import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.form.AjaxSubmitLink;
 import org.apache.wicket.bean.validation.Property;
@@ -26,10 +27,18 @@ public class BankAccountDetailPanel extends GenericPanel<BankAccountCandidate> {
     @SpringBean
     private BankAccountService bankAccountService;
 
+    private final SerializableBiConsumer<AjaxRequestTarget, Component> onSaveConsumer;
+
     public BankAccountDetailPanel(String id, IModel<BankAccountCandidate> model) {
         super(id, model);
+        this.onSaveConsumer = ((ajaxRequestTarget, component) -> {
+        });
     }
 
+    public BankAccountDetailPanel(String id, IModel<BankAccountCandidate> model, SerializableBiConsumer<AjaxRequestTarget, Component> onSaveConsumer) {
+        super(id, model);
+        this.onSaveConsumer = onSaveConsumer;
+    }
 
     @Override
     protected void onInitialize() {
@@ -54,7 +63,7 @@ public class BankAccountDetailPanel extends GenericPanel<BankAccountCandidate> {
                 .configure(c -> c.add(new PropertyValidator<>(new Property(BankAccountCandidate.class, "bank"))))
                 .attach(form, "bank", LambdaModel.of(form.getModel(), BankAccountCandidate::getBank, BankAccountCandidate::setBank), new ListModel<>(Bank.Companion.getBanks()));
 
-        LinkBuilderFactory.submitLink(saveAction())
+        LinkBuilderFactory.submitLink(saveAction().andThen(this.onSaveConsumer))
                 .attach(form, "save");
 
         this.add(form);

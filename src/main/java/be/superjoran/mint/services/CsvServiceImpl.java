@@ -107,7 +107,7 @@ public class CsvServiceImpl implements CsvService {
         List<BankAccount> uniqueBankAccounts = io.vavr.collection.List.ofAll(files)
                 .map(CsvFile::getBankAccount)
                 .distinctBy(BankAccount::getNumber)
-                .filter(bankAccount -> bankAccount.getUuid() != null)
+                .filter(bankAccount -> bankAccount.getUuid() == null)
                 .toJavaList();
 
         this.bankAccountService.save(uniqueBankAccounts);
