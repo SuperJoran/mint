@@ -75,7 +75,9 @@ public class CsvServiceImpl implements CsvService {
                     if (row.length > 0 && entry.getValue().getIdentifyStatementPredicate().test(line)) {
                         bankAccount = bankAccountMap.get(row[entry.getValue().getRowNumberFromAccount()]);
                         if (bankAccount == null) {
-                            bankAccount = new BankAccount(person, entry.getKey(), row[entry.getValue().getRowNumberFromAccount()]);
+                            BankAccount newBankAccount = new BankAccount(person, entry.getKey(), row[entry.getValue().getRowNumberFromAccount()]);
+                            bankAccountMap.put(newBankAccount.getNumber(), newBankAccount);
+                            bankAccount = newBankAccount;
                         }
                     }
                 }

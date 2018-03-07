@@ -21,7 +21,7 @@ class BankAccount
         @Column(nullable = false)
         @get:NotNull @get:Pattern(regexp = "[A-Z]{2}[0-9]{2}(\\s[0-9]{4}){3}")
         var number: String
-): DomainObject() {
+) : DomainObject() {
 
     var bank: Bank = Bank.BELFIUS
 
@@ -41,9 +41,12 @@ class BankAccount
     }
 
     override val displayValue: String
-        get() = if (this.name != null) this.name.toString() else this.number
+        get() = if (this.name != null) this.name.toString() + " ($number)" else this.number
 
     override fun toString(): String {
         return displayValue
     }
+
+    override val id: String?
+        get() = this.number
 }

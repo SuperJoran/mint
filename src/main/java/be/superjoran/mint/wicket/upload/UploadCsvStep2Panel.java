@@ -5,7 +5,7 @@ import be.superjoran.common.datatable.ColumnBuilderFactory;
 import be.superjoran.common.datatable.DataTableBuilderFactory;
 import be.superjoran.common.form.BaseForm;
 import be.superjoran.common.link.LinkBuilderFactory;
-import be.superjoran.common.model.DomainObjectListModel;
+import be.superjoran.common.model.LoadableListModel;
 import be.superjoran.mint.domain.BankAccount;
 import be.superjoran.mint.domain.Person;
 import be.superjoran.mint.domain.searchresults.CsvFile;
@@ -31,8 +31,6 @@ public class UploadCsvStep2Panel extends GenericPanel<List<CsvFile>> {
     private CsvService csvService;
     @SpringBean
     private StatementService statementService;
-    @SpringBean
-    private BankAccountService bankAccountService;
 
     private final IModel<Person> personIModel;
     private final IModel<List<BankAccount>> bankAccountListModel;
@@ -40,7 +38,7 @@ public class UploadCsvStep2Panel extends GenericPanel<List<CsvFile>> {
     public UploadCsvStep2Panel(String id, IModel<List<CsvFile>> model, IModel<Person> personIModel) {
         super(id, model);
         this.personIModel = personIModel;
-        this.bankAccountListModel = new DomainObjectListModel<>(this.bankAccountService, s -> s.findAllByOwner(this.personIModel.getObject()));
+        this.bankAccountListModel = new BankAccountCustomListModel(model);
     }
 
     @Override
@@ -63,6 +61,29 @@ public class UploadCsvStep2Panel extends GenericPanel<List<CsvFile>> {
                 .usingDefaults()
                 .attach(this, "save");
 
+    }
+
+    private static class BankAccountCustomListModel extends LoadableListModel<BankAccount> {
+        private static final long serialVersionUID = 4800483891654170501L;
+        private final IModel<List<CsvFile>> csvFileListModel;
+        @SpringBean
+        private BankAccountService bankAccountService;
+
+        private BankAccountCustomListModel(IModel<List<CsvFile>> csvFileListModel) {
+            this.csvFileListModel = csvFileListModel;
+        }
+
+        @Override
+        protected List<BankAccount> load() {
+            List<BankAccount> bankAccountList = this.bankAccountService.findAll();
+            bankAccountList.addAll(io.vavr.collection.List.ofAll(this.csvFileListModel.getObject())
+                    .map(CsvFile::getBankAccount)
+                    .distinctBy(BankAccount::getNumber)
+                    .filter(bankAccount -> bankAccount.getUuid() == null)
+                    .toJavaList());
+
+            return bankAccountList;
+        }
     }
 
     @NotNull
