@@ -13,7 +13,7 @@ import be.superjoran.mint.services.BankAccountService;
 import be.superjoran.mint.services.CsvService;
 import be.superjoran.mint.services.StatementService;
 import org.apache.wicket.ajax.AjaxRequestTarget;
-import org.apache.wicket.ajax.markup.html.AjaxLink;
+import org.apache.wicket.ajax.markup.html.form.AjaxSubmitLink;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.LambdaColumn;
 import org.apache.wicket.feedback.ExactLevelFeedbackMessageFilter;
 import org.apache.wicket.feedback.FeedbackMessage;
@@ -27,6 +27,7 @@ import org.jetbrains.annotations.NotNull;
 
 import javax.validation.ConstraintViolationException;
 import java.util.List;
+import java.util.Optional;
 
 public class UploadCsvStep2Panel extends GenericPanel<List<CsvFile>> {
     private static final long serialVersionUID = -8480823644003013981L;
@@ -46,7 +47,7 @@ public class UploadCsvStep2Panel extends GenericPanel<List<CsvFile>> {
     }
 
     @NotNull
-    private static SerializableBiConsumer<AjaxRequestTarget, AjaxLink<Object>> saveStatementsAction() {
+    private static SerializableBiConsumer<AjaxRequestTarget, AjaxSubmitLink> saveStatementsAction() {
         return (ajaxRequestTarget, components) -> {
             UploadCsvStep2Panel parent = components.findParent(UploadCsvStep2Panel.class);
             try {
@@ -60,6 +61,30 @@ public class UploadCsvStep2Panel extends GenericPanel<List<CsvFile>> {
                 ajaxRequestTarget.add(components.getPage());
             }
         };
+    }
+
+    @Override
+    protected void onInitialize() {
+        super.onInitialize();
+
+        this.add(new VisibilityBehavior<>(c -> c.getDefaultModelObject() != null));
+
+        BaseForm<List<CsvFile>> form = new BaseForm<>("form", this.getModel());
+        form.add(new FencedFeedbackPanel("feedbackErrors", this, new ExactLevelFeedbackMessageFilter(FeedbackMessage.ERROR)));
+
+
+        DataTableBuilderFactory.<CsvFile, String>simple()
+                .addColumn(new LambdaColumn<>(new ResourceModel("file"), csvFile -> csvFile.getFileUrl().getName()))
+                .addColumn(new LambdaColumn<>(new ResourceModel("bank.account"), csvFile -> Optional.ofNullable(csvFile.getBankAccount()).map(BankAccount::getName).orElse("")))
+                .addColumn(ColumnBuilderFactory.custom(new ResourceModel("bank.account"), (id, model) -> new BankAccountDropdownPanel(id, model, this.personIModel, this.bankAccountListModel)))
+                .attach(form, "datatable", this.getModel());
+
+        this.add(form);
+
+        LinkBuilderFactory.submitLink(saveStatementsAction())
+                .usingDefaults()
+                .attach(form, "save");
+
     }
 
     private static class BankAccountCustomListModel extends LoadableListModel<BankAccount> {
@@ -76,6 +101,7 @@ public class UploadCsvStep2Panel extends GenericPanel<List<CsvFile>> {
         protected List<BankAccount> load() {
             List<BankAccount> bankAccountList = this.bankAccountService.findAll();
             bankAccountList.addAll(io.vavr.collection.List.ofAll(this.csvFileListModel.getObject())
+                    .filter(bankAccount -> bankAccount.getBankAccount() != null)
                     .map(CsvFile::getBankAccount)
                     .distinctBy(BankAccount::getNumber)
                     .filter(bankAccount -> bankAccount.getUuid() == null)
@@ -83,29 +109,5 @@ public class UploadCsvStep2Panel extends GenericPanel<List<CsvFile>> {
 
             return bankAccountList;
         }
-    }
-
-    @Override
-    protected void onInitialize() {
-        super.onInitialize();
-
-        this.add(new VisibilityBehavior<>(c -> c.getDefaultModelObject() != null));
-
-        BaseForm<List<CsvFile>> form = new BaseForm<>("form", this.getModel());
-        form.add(new FencedFeedbackPanel("feedbackErrors", this, new ExactLevelFeedbackMessageFilter(FeedbackMessage.ERROR)));
-
-
-        DataTableBuilderFactory.<CsvFile, String>simple()
-                .addColumn(new LambdaColumn<>(new ResourceModel("file"), csvFile -> csvFile.getFileUrl().getName()))
-                .addColumn(new LambdaColumn<>(new ResourceModel("bank.account"), csvFile -> csvFile.getBankAccount().getName()))
-                .addColumn(ColumnBuilderFactory.custom(new ResourceModel("bank.account"), (id, model) -> new BankAccountDropdownPanel(id, model, this.personIModel, this.bankAccountListModel)))
-                .attach(form, "datatable", this.getModel());
-
-        this.add(form);
-
-        LinkBuilderFactory.ajaxLink(saveStatementsAction())
-                .usingDefaults()
-                .attach(this, "save");
-
     }
 }

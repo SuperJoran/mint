@@ -7,11 +7,12 @@ import be.superjoran.mint.domain.Person;
 import be.superjoran.mint.domain.Statement;
 import be.superjoran.mint.domain.searchresults.CsvFile;
 import com.google.common.base.CharMatcher;
+import kotlin.text.Regex;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
 
 import javax.validation.Valid;
 import java.io.BufferedReader;
@@ -54,9 +55,12 @@ public class CsvServiceImpl implements CsvService {
     private static final Map<Bank, CsvOptions> SUPPORTED_BANKS_OPTIONS = new EnumMap<>(Bank.class);
 
     static {
+        SUPPORTED_BANKS_OPTIONS.put(Bank.KEYTRADE, new CsvOptions(";", s -> {
+            Regex regex = new Regex("^([0-9]{4})\\/([0-9]{4})\\/([0-9]{4})+$");
+            return regex.matches(StringUtils.strip(s.split(";")[0], "�"));
+        }, "dd.MM.yyyy", 5, 1, null, 3, 4));
         SUPPORTED_BANKS_OPTIONS.put(Bank.BELFIUS, new CsvOptions(";", s -> s.startsWith("BE"), "dd/MM/yyyy", 10, 1, 0, 4, 8));
         SUPPORTED_BANKS_OPTIONS.put(Bank.ING, new CsvOptions(";", s -> Character.isDigit(s.charAt(0)), "dd/MM/yyyy", 6, 4, 0, 2, 8));
-        SUPPORTED_BANKS_OPTIONS.put(Bank.KEYTRADE, new CsvOptions(";", s -> false, "dd.MM.yyyy", 5, 1, -1, 3, 4));
     }
 
     @Override
@@ -69,16 +73,22 @@ public class CsvServiceImpl implements CsvService {
         try (BufferedReader br = new BufferedReader(new FileReader(fileUrl))) {
             String line;
 
-            while ((line = br.readLine()) != null && bankAccount == null) {
+            boolean bankFound = false;
+            while ((line = br.readLine()) != null && !bankFound) {
                 for (Entry<Bank, CsvOptions> entry : SUPPORTED_BANKS_OPTIONS.entrySet()) {
                     String[] row = line.split(entry.getValue().getCvsSplitBy());
                     if (row.length > 0 && entry.getValue().getIdentifyStatementPredicate().test(line)) {
-                        bankAccount = bankAccountMap.get(row[entry.getValue().getRowNumberFromAccount()]);
-                        if (bankAccount == null) {
-                            BankAccount newBankAccount = new BankAccount(person, entry.getKey(), row[entry.getValue().getRowNumberFromAccount()]);
-                            bankAccountMap.put(newBankAccount.getNumber(), newBankAccount);
-                            bankAccount = newBankAccount;
+                        bankFound = true;
+                        Integer rowNumberFromAccount = entry.getValue().getRowNumberFromAccount();
+                        if (rowNumberFromAccount != null) {
+                            bankAccount = bankAccountMap.get(row[rowNumberFromAccount]);
+                            if (bankAccount == null) {
+                                BankAccount newBankAccount = new BankAccount(person, entry.getKey(), row[entry.getValue().getRowNumberFromAccount()]);
+                                bankAccountMap.put(newBankAccount.getNumber(), newBankAccount);
+                                bankAccount = newBankAccount;
+                            }
                         }
+
                     }
                 }
             }
@@ -107,6 +117,7 @@ public class CsvServiceImpl implements CsvService {
 
     private void persistBankAccounts(@Valid @NotNull List<CsvFile> files, @NotNull Person person) {
         List<BankAccount> uniqueBankAccounts = io.vavr.collection.List.ofAll(files)
+                .filter(csvFile -> csvFile.getBankAccount() != null)
                 .map(CsvFile::getBankAccount)
                 .distinctBy(BankAccount::getNumber)
                 .filter(bankAccount -> bankAccount.getUuid() == null)

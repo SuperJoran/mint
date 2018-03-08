@@ -8,7 +8,7 @@ class CsvOptions(
         val datePattern: String,
         val rowNumberAmount: Int,
         val rowNumberDate: Int,
-        val rowNumberFromAccount: Int,
+        var rowNumberFromAccount: Int?,
         val rowNumberToAccount: Int,
         val rowNumberDescription: Int
 )
