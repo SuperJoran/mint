@@ -3,12 +3,19 @@
 <body>
 <wicket:panel>
     <form wicket:id="form">
-        <div wicket:id="feedbackErrors"></div>
         <table wicket:id="datatable"></table>
+
+
+        <div class="panel panel-info" style="position: sticky; bottom: 0;">
+            <div class="panel-heading">Save</div>
+            <div class="panel-body">
+                <div wicket:id="feedbackErrors"></div>
+                <button wicket:id="save" class="btn btn-default">Save</button>
+            </div>
+        </div>
 
     </form>
 
-    <button wicket:id="save" class="btn btn-default">Save</button>
 </wicket:panel>
 </body>
 </html>

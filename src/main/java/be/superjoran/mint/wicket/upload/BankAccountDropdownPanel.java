@@ -10,6 +10,8 @@ import be.superjoran.mint.wicket.bankaccounts.BankAccountDetailPanel;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
+import org.apache.wicket.bean.validation.Property;
+import org.apache.wicket.bean.validation.PropertyValidator;
 import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.DataTable;
 import org.apache.wicket.markup.html.panel.GenericPanel;
@@ -61,6 +63,7 @@ public class BankAccountDropdownPanel extends GenericPanel<CsvFile> {
 
         FormComponentBuilderFactory.<BankAccount>dropDown()
                 .container()
+                .configure(c -> c.add(new PropertyValidator<CsvFile>(new Property(CsvFile.class, "bankAccount"))))
                 .attach(this,
                         BANKACCOUNT_DROPDOWN_ID,
                         LambdaModel.of(this.getModel(), CsvFile::getBankAccount, CsvFile::setBankAccount),

@@ -38,10 +38,10 @@ public class AjaxSubmitLinkBuilder extends AjaxLinkBuilderSupport<AjaxSubmitLink
         @Override
         protected void onAfterSubmit(AjaxRequestTarget target) {
             super.onAfterSubmit(target);
+            this.submitConsumer.accept(target, this);
             BaseForm<?> parent = this.findParent(BaseForm.class);
             IModel<BaseForm.FormMode> formModeModel = parent.getFormModeModel();
             formModeModel.setObject(BaseForm.FormMode.READ);
-            this.submitConsumer.accept(target, this);
             target.add(parent);
         }
     }
