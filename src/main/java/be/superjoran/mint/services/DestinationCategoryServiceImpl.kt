@@ -14,4 +14,8 @@ class DestinationCategoryServiceImpl(private val dao: DestinationCategoryDao) : 
     override fun findDestinationCategories(): List<DestinationCategory> {
         return this.dao.findDestinationCategories()
     }
+
+    override fun findNumberOfStatementsThatCanBeAssigned(owner: Person): Int {
+        return this.dao.findNumberOfStatementsThatCanBeAssigned(owner.uuid!!)
+    }
 }

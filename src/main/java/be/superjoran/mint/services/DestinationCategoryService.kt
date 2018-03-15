@@ -7,4 +7,6 @@ interface DestinationCategoryService {
     fun findDestinationCategories(): List<DestinationCategory>
 
     fun assignCategoriesAutomatically(owner: Person)
+
+    fun findNumberOfStatementsThatCanBeAssigned(owner: Person): Int
 }

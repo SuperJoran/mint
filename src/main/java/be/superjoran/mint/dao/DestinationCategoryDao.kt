@@ -6,4 +6,6 @@ interface DestinationCategoryDao {
     fun findDestinationCategories(): List<DestinationCategory>
 
     fun assignCategoriesAutomatically(personUuid: String)
+
+    fun findNumberOfStatementsThatCanBeAssigned(personUuid: String): Int
 }

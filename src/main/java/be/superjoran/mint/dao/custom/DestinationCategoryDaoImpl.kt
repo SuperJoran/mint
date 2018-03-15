@@ -8,6 +8,12 @@ import org.springframework.stereotype.Repository
 
 @Repository
 class DestinationCategoryDaoImpl(private val jdbcTemplate: JdbcTemplate) : DestinationCategoryDao {
+    override fun findNumberOfStatementsThatCanBeAssigned(personUuid: String): Int {
+        val sql = "SELECT count(0) FROM V_STATEMENTS_TO_ASSIGN vc WHERE vc.owner_uuid = ?"
+
+        return this.jdbcTemplate.queryForObject(sql, Int::class.java, personUuid)
+    }
+
     override fun assignCategoriesAutomatically(personUuid: String) {
         val sql = "UPDATE t_statement \n" +
                 "SET category_uuid = vc.category_uuid\n" +
