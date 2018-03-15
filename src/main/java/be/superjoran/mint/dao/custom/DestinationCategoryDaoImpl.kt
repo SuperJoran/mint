@@ -8,9 +8,18 @@ import org.springframework.stereotype.Repository
 
 @Repository
 class DestinationCategoryDaoImpl(private val jdbcTemplate: JdbcTemplate) : DestinationCategoryDao {
+    override fun assignCategoriesAutomatically(personUuid: String) {
+        val sql = "UPDATE t_statement \n" +
+                "SET category_uuid = vc.category_uuid\n" +
+                "FROM V_STATEMENTS_TO_ASSIGN vc\n" +
+                "WHERE t_statement.uuid = vc.uuid\n" +
+                "AND vc.owner_uuid = ?"
+
+        this.jdbcTemplate.update(sql, personUuid)
+    }
 
     override fun findDestinationCategories(): List<DestinationCategory> {
-        val sql = "SELECT c.destinationaccountnumber as destinationAccountNumber, c.categoryuuid as categoryUuid FROM V_DESTINATION_CATEGORY c"
+        val sql = "SELECT c.destinationaccount_number AS destinationAccountNumber, c.category_uuid AS categoryUuid FROM V_DESTINATION_CATEGORY c"
         return this.jdbcTemplate.query(sql, BeanPropertyRowMapper(DestinationCategory::class.java))
     }
 }

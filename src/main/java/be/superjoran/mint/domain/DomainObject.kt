@@ -27,6 +27,6 @@ abstract class DomainObject : Serializable, Cloneable, Display {
     override val id: String?
         get() = this.uuid
     override val displayValue: String?
-        get() = this.uuid
+        get() = this.toString()
 
 }

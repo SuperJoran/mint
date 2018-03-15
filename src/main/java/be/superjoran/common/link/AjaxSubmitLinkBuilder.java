@@ -3,7 +3,6 @@ package be.superjoran.common.link;
 import be.superjoran.common.form.BaseForm;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.form.AjaxSubmitLink;
-import org.apache.wicket.model.IModel;
 import org.danekja.java.util.function.serializable.SerializableBiConsumer;
 
 /**
@@ -40,8 +39,6 @@ public class AjaxSubmitLinkBuilder extends AjaxLinkBuilderSupport<AjaxSubmitLink
             super.onAfterSubmit(target);
             this.submitConsumer.accept(target, this);
             BaseForm<?> parent = this.findParent(BaseForm.class);
-            IModel<BaseForm.FormMode> formModeModel = parent.getFormModeModel();
-            formModeModel.setObject(BaseForm.FormMode.READ);
             target.add(parent);
         }
     }

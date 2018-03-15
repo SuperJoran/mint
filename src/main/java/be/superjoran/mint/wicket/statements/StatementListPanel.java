@@ -3,7 +3,6 @@ package be.superjoran.mint.wicket.statements;
 import be.superjoran.common.datatable.ColumnBuilderFactory;
 import be.superjoran.common.datatable.DataTableBuilderFactory;
 import be.superjoran.common.form.BaseForm;
-import be.superjoran.common.form.BaseForm.FormMode;
 import be.superjoran.common.form.FormComponentBuilderFactory;
 import be.superjoran.common.link.LinkBuilderFactory;
 import be.superjoran.common.model.DomainObjectListModel;
@@ -79,16 +78,15 @@ public class StatementListPanel extends GenericPanel<List<Statement>> {
         this.add(dataTableForm);
     }
 
-    private void stickyFooter(MarkupContainer parent) {
-        WebMarkupContainer stickyFooter = new WebMarkupContainer("sticky");
-        LinkBuilderFactory.submitLink(save())
-                .attach(stickyFooter, "save");
+    @NotNull
+    private static SerializableBiConsumer<AjaxRequestTarget, AjaxSubmitLink> assignCategories() {
+        return (ajaxRequestTarget, components) -> {
+            StatementListPanel parent = components.findParent(StatementListPanel.class);
 
-        FormComponentBuilderFactory.<Category>dropDown()
-                .body(new ResourceModel("category"))
-                .attach(stickyFooter, "category", this.chosenCategoryModel, new DomainObjectListModel<>(this.categoryService));
-
-        parent.add(stickyFooter);
+            parent.statementService.assignCategories(parent.selectedStatementsModel.getObject(), parent.chosenCategoryModel.getObject());
+            parent.getModel().setObject(null);
+            ajaxRequestTarget.add(parent);
+        };
     }
 
     @SuppressWarnings("unchecked")
@@ -101,15 +99,15 @@ public class StatementListPanel extends GenericPanel<List<Statement>> {
         return (DataTable<Statement, String>) this.getForm().get(CHECK_GROUP_ID).get(DATATABLE_ID);
     }
 
-    @NotNull
-    private static SerializableBiConsumer<AjaxRequestTarget, AjaxSubmitLink> save() {
-        return (ajaxRequestTarget, components) -> {
-            StatementListPanel parent = components.findParent(StatementListPanel.class);
+    private void stickyFooter(MarkupContainer parent) {
+        WebMarkupContainer stickyFooter = new WebMarkupContainer("sticky");
+        LinkBuilderFactory.submitLink(assignCategories())
+                .attach(stickyFooter, "save");
 
-            parent.statementService.assignCategories(parent.selectedStatementsModel.getObject(), parent.chosenCategoryModel.getObject());
-            parent.getModel().setObject(null);
-            parent.getForm().getFormModeModel().setObject(FormMode.EDIT);
-            ajaxRequestTarget.add(parent);
-        };
+        FormComponentBuilderFactory.<Category>dropDown()
+                .body(new ResourceModel("category"))
+                .attach(stickyFooter, "category", this.chosenCategoryModel, new DomainObjectListModel<>(this.categoryService));
+
+        parent.add(stickyFooter);
     }
 }

@@ -14,13 +14,16 @@ import org.jetbrains.annotations.NotNull;
 
 public class StatementListPage extends BasePage<Person> {
     private static final long serialVersionUID = -6066087619138624356L;
+
     private static final String STATEMENTS_PANEL_ID = "statements";
 
     @SpringBean
     private AssignCategoriesService assignCategoriesService;
+    private final StatementListModel statementListModel;
 
     public StatementListPage(IModel<Person> model) {
         super(model);
+        this.statementListModel = new StatementListModel(model);
     }
 
     @NotNull
@@ -28,6 +31,7 @@ public class StatementListPage extends BasePage<Person> {
         return (ajaxRequestTarget, components) -> {
             StatementListPage parent = components.findParent(StatementListPage.class);
             parent.assignCategoriesService.assignCategoriesForPerson(parent.getModelObject());
+            parent.statementListModel.setObject(null);
             ajaxRequestTarget.add(parent.getStatementListPanel());
         };
     }
@@ -40,10 +44,10 @@ public class StatementListPage extends BasePage<Person> {
                 .usingDefaults()
                 .attach(this, "assignCategories");
 
-        this.add(new StatementListPanel(STATEMENTS_PANEL_ID, new StatementListModel(this.getModel())));
+        this.add(new StatementListPanel(STATEMENTS_PANEL_ID, this.statementListModel));
     }
 
-    public Component getStatementListPanel() {
+    private Component getStatementListPanel() {
         return this.get(STATEMENTS_PANEL_ID);
     }
 }

@@ -3,6 +3,7 @@ package be.superjoran.mint.wicket.bankaccounts;
 import be.superjoran.common.form.BaseForm;
 import be.superjoran.common.form.FormComponentBuilderFactory;
 import be.superjoran.common.link.LinkBuilderFactory;
+import be.superjoran.common.link.LinkFunctions;
 import be.superjoran.mint.domain.Bank;
 import be.superjoran.mint.domain.searchresults.BankAccountCandidate;
 import be.superjoran.mint.services.BankAccountService;
@@ -63,7 +64,7 @@ public class BankAccountDetailPanel extends GenericPanel<BankAccountCandidate> {
                 .configure(c -> c.add(new PropertyValidator<>(new Property(BankAccountCandidate.class, "bank"))))
                 .attach(form, "bank", LambdaModel.of(form.getModel(), BankAccountCandidate::getBank, BankAccountCandidate::setBank), new ListModel<>(Bank.Companion.getBanks()));
 
-        LinkBuilderFactory.submitLink(saveAction().andThen(this.onSaveConsumer))
+        LinkBuilderFactory.submitLink(saveAction().andThen(this.onSaveConsumer).andThen(LinkFunctions.read()))
                 .attach(form, "save");
 
         this.add(form);
