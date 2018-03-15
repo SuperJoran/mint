@@ -21,12 +21,15 @@ public class V001_004__add_categories implements JdbcMigration {
         String insertCategorySql = "INSERT INTO t_category (uuid, name, category_group_uuid) VALUES (?, ?, (SELECT UUID FROM t_category_group gr WHERE gr.name = ?))";
 
         Map<String, List<String>> map = new HashMap<>();
-        map.put("Car & Transport", Arrays.asList("Fuel", "Taxes", "Insurance", "Upkeep"));
-        map.put("Household", Collections.singletonList("Food"));
-        map.put("Healthcare", Arrays.asList("Docter", "Pharmacy", "Mutuality"));
+        map.put("Car & Transport", Arrays.asList("Fuel", "Taxes", "Insurance", "Upkeep", "Public Transport"));
+        map.put("Household", Arrays.asList("Food", "Appliances"));
+        map.put("Healthcare", Arrays.asList("Docter", "Pharmacy", "Mutuality", "Optical"));
         map.put("Clothing & Personal Care", Arrays.asList("Hairdresser", "Clothing"));
-        map.put("Entertainment", Arrays.asList("Games", "Movies"));
-        map.put("Telecom", Arrays.asList("Phone", "Subscription"));
+        map.put("Entertainment", Arrays.asList("Games", "Movies", "Sport"));
+        map.put("Telecom", Arrays.asList("Phone", "Internet", "TV"));
+        map.put("Housing", Arrays.asList("Rent", "Payment", "Taxes"));
+        map.put("Travelling", Arrays.asList("Rent", "Payment", "Taxes"));
+        map.put("Energy", Arrays.asList("Electricity", "Water", "Taxes"));
         map.put("Other", Collections.singletonList("Internal"));
 
 

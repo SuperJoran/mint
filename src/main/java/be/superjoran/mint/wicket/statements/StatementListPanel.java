@@ -44,14 +44,20 @@ public class StatementListPanel extends GenericPanel<List<Statement>> {
     private final IModel<Category> chosenCategoryModel;
     private final IModel<List<Statement>> filteredStatementsModel;
     private final IModel<String> searchModel;
+    private final SerializableBiConsumer<AjaxRequestTarget, AjaxSubmitLink> afterSaveFunction;
 
     public StatementListPanel(String id, IModel<List<Statement>> model) {
+        this(id, model, ((ajaxRequestTarget, component) -> {
+        }));
+    }
+
+    public StatementListPanel(String id, IModel<List<Statement>> model, SerializableBiConsumer<AjaxRequestTarget, AjaxSubmitLink> afterSaveFunction) {
         super(id, model);
         this.selectedStatementsModel = new ListModel<>(new ArrayList<>());
         this.chosenCategoryModel = new Model<>(null);
         this.searchModel = new Model<>("");
         this.filteredStatementsModel = new FilteredStatementsModel(model, this.searchModel);
-
+        this.afterSaveFunction = afterSaveFunction;
     }
 
     @Override
@@ -68,6 +74,7 @@ public class StatementListPanel extends GenericPanel<List<Statement>> {
         DataTableBuilderFactory.<Statement, String>simple()
                 .addColumn(ColumnBuilderFactory.<Statement, String>check().build(new ResourceModel("category")))
                 .addColumn(new LambdaColumn<>(new ResourceModel("statement"), Statement::getOriginatingAccount))
+                .addColumn(new LambdaColumn<>(new ResourceModel("amount"), Statement::getAmount))
                 .addColumn(new LambdaColumn<>(new ResourceModel("to"), Statement::getDestinationAccountNumber))
                 .addColumn(new LambdaColumn<>(new ResourceModel("description"), Statement::getDescription))
                 .addColumn(new LambdaColumn<>(new ResourceModel("category"), Statement::getCategory))
@@ -101,7 +108,7 @@ public class StatementListPanel extends GenericPanel<List<Statement>> {
 
     private void stickyFooter(MarkupContainer parent) {
         WebMarkupContainer stickyFooter = new WebMarkupContainer("sticky");
-        LinkBuilderFactory.submitLink(assignCategories())
+        LinkBuilderFactory.submitLink(assignCategories().andThen(this.afterSaveFunction))
                 .attach(stickyFooter, "save");
 
         FormComponentBuilderFactory.<Category>dropDown()

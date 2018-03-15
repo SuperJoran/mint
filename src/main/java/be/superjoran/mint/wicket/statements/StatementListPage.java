@@ -39,9 +39,16 @@ public class StatementListPage extends BasePage<Person> {
         return (ajaxRequestTarget, components) -> {
             StatementListPage parent = components.findParent(StatementListPage.class);
             parent.assignCategoriesService.assignCategoriesForPerson(parent.getModelObject());
+        };
+    }
+
+    @NotNull
+    private static <X extends Component> SerializableBiConsumer<AjaxRequestTarget, X> reloadPage() {
+        return (ajaxRequestTarget, components) -> {
+            StatementListPage parent = components.findParent(StatementListPage.class);
             parent.statementListModel.setObject(null);
             parent.numberOfStatementsThatCanBeAssignedModel.setObject(null);
-            ajaxRequestTarget.add(parent.getStatementListPanel());
+            ajaxRequestTarget.add(parent);
         };
     }
 
@@ -49,12 +56,12 @@ public class StatementListPage extends BasePage<Person> {
     protected void onInitialize() {
         super.onInitialize();
 
-        LinkBuilderFactory.ajaxLink(assignCategories())
+        LinkBuilderFactory.ajaxLink(assignCategories().andThen(reloadPage()))
                 .usingDefaults()
                 .body(new StringResourceModel("assign.categories", this.numberOfStatementsThatCanBeAssignedModel))
                 .attach(this, "assignCategories");
 
-        this.add(new StatementListPanel(STATEMENTS_PANEL_ID, this.statementListModel));
+        this.add(new StatementListPanel(STATEMENTS_PANEL_ID, this.statementListModel, reloadPage()));
     }
 
     private Component getStatementListPanel() {

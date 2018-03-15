@@ -19,7 +19,10 @@ public class FilteredStatementsModel implements IModel<List<Statement>> {
     @Override
     public List<Statement> getObject() {
         return this.statementsListModel.getObject().stream()
-                .filter(statement -> StringUtils.isEmpty(this.searchModel.getObject()) || StringUtils.containsIgnoreCase(statement.getDescription(), this.searchModel.getObject()))
+                .filter(statement -> StringUtils.isEmpty(this.searchModel.getObject())
+                        || StringUtils.containsIgnoreCase(statement.getDescription(), this.searchModel.getObject())
+                        || StringUtils.containsIgnoreCase(statement.getDestinationAccountNumber(), this.searchModel.getObject())
+                )
                 .collect(Collectors.toList());
     }
 }
