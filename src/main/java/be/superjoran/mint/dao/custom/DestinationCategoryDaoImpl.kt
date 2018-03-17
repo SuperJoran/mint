@@ -34,20 +34,26 @@ class DestinationCategoryDaoImpl(private val jdbcTemplate: JdbcTemplate) : Desti
                 "SET category_uuid = (SELECT cat.uuid\n" +
                 "                     FROM t_category cat\n" +
                 "                     WHERE cat.name = 'Internal')\n" +
-                "WHERE uuid IN (WITH personalAccountNumbers AS (SELECT ba.number\n" +
-                "                                               FROM t_bankaccount ba\n" +
-                "                                               WHERE ba.owner_uuid = ?),\n" +
-                "    personalAccountNumbers_asIng AS (SELECT iban_to_ing_number(ba.number)\n" +
-                "                                     FROM t_bankaccount ba\n" +
-                "                                     WHERE ba.owner_uuid = ?)\n" +
-                "SELECT s.uuid\n" +
-                "FROM t_statement s\n" +
-                "  INNER JOIN t_bankaccount ba ON ba.owner_uuid = ?\n" +
-                "WHERE s.destinationaccount_number IN (SELECT *\n" +
-                "                                      FROM personalAccountNumbers_asIng)\n" +
-                "      OR s.destinationaccount_number IN (SELECT *\n" +
-                "                                         FROM personalAccountNumbers))"
-        this.jdbcTemplate.update(sql, ownerUuid, ownerUuid, ownerUuid)
+                "WHERE uuid IN (\n" +
+                "  WITH personalAccountNumbers AS (SELECT ba.number\n" +
+                "                                  FROM t_bankaccount ba\n" +
+                "                                  WHERE ba.owner_uuid = ?),\n" +
+                "      personalAccountNumbers_asIng AS (SELECT iban_to_ing_number(ba.number)\n" +
+                "                                       FROM t_bankaccount ba\n" +
+                "                                       WHERE ba.owner_uuid = ?),\n" +
+                "      personalAccountNumbers_unformatted AS (SELECT replace(ba.number, ' ', '')\n" +
+                "                                             FROM t_bankaccount ba\n" +
+                "                                             WHERE ba.owner_uuid = ?)\n" +
+                "  SELECT s.uuid\n" +
+                "  FROM t_statement s\n" +
+                "    INNER JOIN t_bankaccount ba ON ba.owner_uuid = ?\n" +
+                "  WHERE s.destinationaccount_number IN (SELECT *\n" +
+                "                                        FROM personalAccountNumbers_asIng)\n" +
+                "        OR s.destinationaccount_number IN (SELECT *\n" +
+                "                                           FROM personalAccountNumbers)\n" +
+                "        OR s.destinationaccount_number IN (SELECT *\n" +
+                "                                           FROM personalAccountNumbers_unformatted))"
+        this.jdbcTemplate.update(sql, ownerUuid, ownerUuid, ownerUuid, ownerUuid)
 
     }
 }

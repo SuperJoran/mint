@@ -11,6 +11,7 @@ import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.model.IModel;
+import org.apache.wicket.model.ResourceModel;
 import org.apache.wicket.model.StringResourceModel;
 import org.apache.wicket.spring.injection.annot.SpringBean;
 import org.danekja.java.util.function.serializable.SerializableBiConsumer;
@@ -25,6 +26,9 @@ public class StatementListPage extends BasePage<Person> {
 
     @SpringBean
     private AssignCategoriesService assignCategoriesService;
+    @SpringBean
+    private DestinationCategoryService destinationCategoryService;
+
     private final StatementListModel statementListModel;
     private final IModel<String> numberOfStatementsThatCanBeAssignedModel;
 
@@ -32,6 +36,14 @@ public class StatementListPage extends BasePage<Person> {
         super(model);
         this.statementListModel = new StatementListModel(model);
         this.numberOfStatementsThatCanBeAssignedModel = new NumberOfStatementsThatCanBeAssignedModel(model, this.statementListModel);
+    }
+
+    @NotNull
+    private static SerializableBiConsumer<AjaxRequestTarget, AjaxLink<Object>> assignInternalCategories() {
+        return (ajaxRequestTarget, components) -> {
+            StatementListPage parent = components.findParent(StatementListPage.class);
+            parent.destinationCategoryService.assignInternalCategory(parent.getModelObject());
+        };
     }
 
     @NotNull
@@ -60,6 +72,11 @@ public class StatementListPage extends BasePage<Person> {
                 .usingDefaults()
                 .body(new StringResourceModel("assign.categories", this.numberOfStatementsThatCanBeAssignedModel))
                 .attach(this, "assignCategories");
+
+        LinkBuilderFactory.ajaxLink(assignInternalCategories().andThen(reloadPage()))
+                .usingDefaults()
+                .body(new ResourceModel("assign.internal.categories"))
+                .attach(this, "assignInternalCategories");
 
         this.add(new StatementListPanel(STATEMENTS_PANEL_ID, this.statementListModel, reloadPage()));
     }
