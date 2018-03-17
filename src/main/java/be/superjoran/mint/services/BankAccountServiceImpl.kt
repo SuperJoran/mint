@@ -20,7 +20,7 @@ class BankAccountServiceImpl(
         return this.dao.findAllByOwner(administrator)
     }
 
-    override fun createOrUpdate(bankAccountCandidate: BankAccountCandidate): BankAccount {
+    override fun create(bankAccountCandidate: BankAccountCandidate): BankAccount {
         return this.save(BankAccount(bankAccountCandidate.owner, requireNonNull<Bank>(bankAccountCandidate.bank), requireNonNull<String>(bankAccountCandidate.number), bankAccountCandidate.name))
     }
 }

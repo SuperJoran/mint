@@ -9,5 +9,5 @@ interface BankAccountService : DomainObjectCrudService<BankAccount> {
 
     fun findAllByOwner(administrator: Person): List<BankAccount>
 
-    fun createOrUpdate(bankAccountCandidate: BankAccountCandidate): BankAccount
+    fun create(bankAccountCandidate: BankAccountCandidate): BankAccount
 }

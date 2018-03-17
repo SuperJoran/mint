@@ -74,7 +74,7 @@ public class BankAccountDetailPanel extends GenericPanel<BankAccountCandidate> {
     private static SerializableBiConsumer<AjaxRequestTarget, AjaxSubmitLink> saveAction() {
         return (ajaxRequestTarget, components) -> {
             BankAccountDetailPanel parent = components.findParent(BankAccountDetailPanel.class);
-            parent.bankAccountService.createOrUpdate(parent.getModelObject());
+            parent.bankAccountService.create(parent.getModelObject());
         };
     }
 }
