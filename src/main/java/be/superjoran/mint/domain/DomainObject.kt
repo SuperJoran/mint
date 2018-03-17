@@ -24,6 +24,17 @@ abstract class DomainObject : Serializable, Cloneable, Display {
         this.uuid = uuid
     }
 
+    override fun equals(other: Any?): Boolean {
+        if (other is DomainObject) {
+            return other.uuid == this.uuid
+        }
+        return super.equals(other)
+    }
+
+    override fun hashCode(): Int {
+        return this.uuid?.hashCode() ?: super.hashCode()
+    }
+
     override val id: String?
         get() = this.uuid
     override val displayValue: String?

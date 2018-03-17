@@ -46,6 +46,7 @@ public class StatementListPanel extends GenericPanel<List<Statement>> {
     private final IModel<List<Statement>> filteredStatementsModel;
     private final IModel<StatementSearchCriteria> searchModel;
     private final SerializableBiConsumer<AjaxRequestTarget, AjaxSubmitLink> afterSaveFunction;
+    private final IModel<List<Category>> categoryListModel;
 
     public StatementListPanel(String id, IModel<List<Statement>> model) {
         this(id, model, ((ajaxRequestTarget, component) -> {
@@ -59,6 +60,7 @@ public class StatementListPanel extends GenericPanel<List<Statement>> {
         this.searchModel = new Model<>(new StatementSearchCriteria());
         this.filteredStatementsModel = new FilteredStatementsModel(model, this.searchModel);
         this.afterSaveFunction = afterSaveFunction;
+        this.categoryListModel = new DomainObjectListModel<>(this.categoryService);
     }
 
     @Override
@@ -66,7 +68,7 @@ public class StatementListPanel extends GenericPanel<List<Statement>> {
         super.onInitialize();
         this.setOutputMarkupId(true);
 
-        this.add(new StatementsSearchCriteriaPanel("search", this.searchModel));
+        this.add(new StatementsSearchCriteriaPanel("search", this.searchModel, this.categoryListModel));
 
         BaseForm<List<Statement>> dataTableForm = new BaseForm<>(FORM_ID, this.getModel());
 
@@ -114,7 +116,7 @@ public class StatementListPanel extends GenericPanel<List<Statement>> {
 
         FormComponentBuilderFactory.<Category>dropDown()
                 .body(new ResourceModel("category"))
-                .attach(stickyFooter, "category", this.chosenCategoryModel, new DomainObjectListModel<>(this.categoryService));
+                .attach(stickyFooter, "category", this.chosenCategoryModel, this.categoryListModel);
 
         parent.add(stickyFooter);
     }

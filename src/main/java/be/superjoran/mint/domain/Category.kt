@@ -22,4 +22,5 @@ class Category(
     override fun toString(): String {
         return String.format("%s - %s", this.categoryGroup.name, this.name)
     }
+
 }
