@@ -1,5 +1,6 @@
 package be.superjoran.mint.dao
 
+import be.superjoran.mint.domain.searchresults.AutomaticallyAssignOption
 import be.superjoran.mint.domain.searchresults.DestinationCategory
 
 interface DestinationCategoryDao {
@@ -10,4 +11,6 @@ interface DestinationCategoryDao {
     fun findNumberOfStatementsThatCanBeAssigned(personUuid: String): Int
 
     fun assignInternalCategory(ownerUuid: String)
+
+    fun findCategoriesThatHavePossibleCandidates(ownerUuid: String): List<AutomaticallyAssignOption>
 }

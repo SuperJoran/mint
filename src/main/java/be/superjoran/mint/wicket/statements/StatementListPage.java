@@ -38,6 +38,25 @@ public class StatementListPage extends BasePage<Person> {
         this.numberOfStatementsThatCanBeAssignedModel = new NumberOfStatementsThatCanBeAssignedModel(model, this.statementListModel);
     }
 
+    @Override
+    protected void onInitialize() {
+        super.onInitialize();
+
+        this.add(new AutoAssignOptionPanel("autoAssign", this.getModel()));
+
+        LinkBuilderFactory.ajaxLink(assignCategories().andThen(reloadPage()))
+                .usingDefaults()
+                .body(new StringResourceModel("assign.categories", this.numberOfStatementsThatCanBeAssignedModel))
+                .attach(this, "assignCategories");
+
+        LinkBuilderFactory.ajaxLink(assignInternalCategories().andThen(reloadPage()))
+                .usingDefaults()
+                .body(new ResourceModel("assign.internal.categories"))
+                .attach(this, "assignInternalCategories");
+
+        this.add(new StatementListPanel(STATEMENTS_PANEL_ID, this.statementListModel, reloadPage()));
+    }
+
     @NotNull
     private static SerializableBiConsumer<AjaxRequestTarget, AjaxLink<Object>> assignInternalCategories() {
         return (ajaxRequestTarget, components) -> {
@@ -62,23 +81,6 @@ public class StatementListPage extends BasePage<Person> {
             parent.numberOfStatementsThatCanBeAssignedModel.setObject(null);
             ajaxRequestTarget.add(parent);
         };
-    }
-
-    @Override
-    protected void onInitialize() {
-        super.onInitialize();
-
-        LinkBuilderFactory.ajaxLink(assignCategories().andThen(reloadPage()))
-                .usingDefaults()
-                .body(new StringResourceModel("assign.categories", this.numberOfStatementsThatCanBeAssignedModel))
-                .attach(this, "assignCategories");
-
-        LinkBuilderFactory.ajaxLink(assignInternalCategories().andThen(reloadPage()))
-                .usingDefaults()
-                .body(new ResourceModel("assign.internal.categories"))
-                .attach(this, "assignInternalCategories");
-
-        this.add(new StatementListPanel(STATEMENTS_PANEL_ID, this.statementListModel, reloadPage()));
     }
 
     private Component getStatementListPanel() {

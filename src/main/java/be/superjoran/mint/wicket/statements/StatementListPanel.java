@@ -41,6 +41,7 @@ public class StatementListPanel extends GenericPanel<List<Statement>> {
     @SpringBean
     private CategoryService categoryService;
 
+
     private final IModel<List<Statement>> selectedStatementsModel;
     private final IModel<Category> chosenCategoryModel;
     private final IModel<List<Statement>> filteredStatementsModel;

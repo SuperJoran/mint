@@ -1,6 +1,7 @@
 package be.superjoran.mint.services
 
 import be.superjoran.mint.domain.Person
+import be.superjoran.mint.domain.searchresults.AutomaticallyAssignOption
 import be.superjoran.mint.domain.searchresults.DestinationCategory
 
 interface DestinationCategoryService {
@@ -11,4 +12,7 @@ interface DestinationCategoryService {
     fun findNumberOfStatementsThatCanBeAssigned(owner: Person): Int
 
     fun assignInternalCategory(owner: Person)
+
+    fun findCategoriesThatHavePossibleCandidates(owner: Person): List<AutomaticallyAssignOption>
+
 }

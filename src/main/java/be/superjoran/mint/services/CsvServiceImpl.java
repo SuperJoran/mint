@@ -177,6 +177,10 @@ public class CsvServiceImpl implements CsvService {
 
     private String getValueFromStringArrayAtPosition(String[] stringArray, int position) {
         //Trims ALL WHITESPACE (e.g.: also specials characters as found in KEYTRADE-csv files)
-        return CharMatcher.whitespace().trimFrom(stringArray[position]);
+        String result = CharMatcher.whitespace().trimFrom(stringArray[position]);
+        if ("-".equals(result)) {
+            result = "";
+        }
+        return result;
     }
 }

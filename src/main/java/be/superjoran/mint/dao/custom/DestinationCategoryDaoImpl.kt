@@ -1,6 +1,7 @@
 package be.superjoran.mint.dao.custom
 
 import be.superjoran.mint.dao.DestinationCategoryDao
+import be.superjoran.mint.domain.searchresults.AutomaticallyAssignOption
 import be.superjoran.mint.domain.searchresults.DestinationCategory
 import org.springframework.jdbc.core.BeanPropertyRowMapper
 import org.springframework.jdbc.core.JdbcTemplate
@@ -56,4 +57,16 @@ class DestinationCategoryDaoImpl(private val jdbcTemplate: JdbcTemplate) : Desti
         this.jdbcTemplate.update(sql, ownerUuid, ownerUuid, ownerUuid, ownerUuid)
 
     }
+
+    override fun findCategoriesThatHavePossibleCandidates(ownerUuid: String): List<AutomaticallyAssignOption> {
+        val sql = "SELECT cat.name as category, count(vc.uuid) as count\n" +
+                "FROM V_STATEMENTS_TO_ASSIGN vc\n" +
+                "  INNER JOIN t_category cat on cat.uuid = vc.category_uuid\n" +
+                "  WHERE vc.owner_uuid = ?\n" +
+                "GROUP BY cat.name"
+
+        return this.jdbcTemplate.query(sql, BeanPropertyRowMapper(AutomaticallyAssignOption::class.java), ownerUuid)
+    }
+
+
 }
