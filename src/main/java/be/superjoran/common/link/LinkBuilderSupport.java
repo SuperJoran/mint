@@ -6,6 +6,7 @@ import org.apache.wicket.behavior.AttributeAppender;
 import org.apache.wicket.behavior.Behavior;
 import org.apache.wicket.markup.html.link.AbstractLink;
 import org.apache.wicket.model.IModel;
+import org.danekja.java.util.function.serializable.SerializableConsumer;
 import org.danekja.java.util.function.serializable.SerializableFunction;
 import org.danekja.java.util.function.serializable.SerializableSupplier;
 
@@ -22,6 +23,7 @@ public abstract class LinkBuilderSupport<L extends LinkBuilderSupport<L, F>, F e
     private SerializableFunction<String, Component> iconProvider;
     private final List<SerializableFunction<F, ? extends Behavior>> behaviors = new ArrayList<>();
     private IModel<? extends String> bodyModel;
+    private SerializableConsumer<F> configureConsumer;
 
     public LinkBuilderSupport() {
     }
@@ -51,6 +53,11 @@ public abstract class LinkBuilderSupport<L extends LinkBuilderSupport<L, F>, F e
         return this.self();
     }
 
+    public L configure(SerializableConsumer<F> configureConsumer) {
+        this.configureConsumer = configureConsumer;
+        return this.self();
+    }
+
     @SuppressWarnings("unchecked")
     private L self() {
         return (L) this;
@@ -64,6 +71,7 @@ public abstract class LinkBuilderSupport<L extends LinkBuilderSupport<L, F>, F e
         this.behaviors.forEach(f -> link.add(f.apply(link)));
         link.setOutputMarkupPlaceholderTag(true);
         Optional.ofNullable(this.bodyModel).ifPresent(link::setBody);
+        Optional.ofNullable(this.configureConsumer).ifPresent(consumer -> consumer.accept(link));
         return link;
     }
 

@@ -23,4 +23,8 @@ class BankAccountServiceImpl(
     override fun create(bankAccountCandidate: BankAccountCandidate): BankAccount {
         return this.save(BankAccount(bankAccountCandidate.owner, requireNonNull<Bank>(bankAccountCandidate.bank), requireNonNull<String>(bankAccountCandidate.number), bankAccountCandidate.name))
     }
+
+    override fun update(bankAccount: BankAccount): BankAccount {
+        return this.save(bankAccount)
+    }
 }
