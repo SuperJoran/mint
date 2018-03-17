@@ -4,6 +4,7 @@ package be.superjoran.mint.wicket;
 import be.superjoran.common.VisibilityBehavior;
 import be.superjoran.common.link.LinkBuilderFactory;
 import be.superjoran.mint.domain.Person;
+import be.superjoran.mint.wicket.categoryexpense.CategoryExpensePage;
 import be.superjoran.mint.wicket.person.AuthorizationRequired;
 import be.superjoran.mint.wicket.person.CustomSession;
 import be.superjoran.mint.wicket.person.LoggedInPersonModel;
@@ -53,6 +54,9 @@ public abstract class BasePage<T> extends GenericWebPage<T> implements Authoriza
 
         LinkBuilderFactory.pageLink(() -> new StatementListPage(this.loggedInPersonModel))
                 .attach(this, "statementsLink");
+
+        LinkBuilderFactory.pageLink(() -> new CategoryExpensePage(this.loggedInPersonModel))
+                .attach(this, "categoryExpensesLink");
 
         this.add(new Label("username", LambdaModel.of(this.loggedInPersonModel, Person::getUsername))
                 .add(new VisibilityBehavior<>(c -> c.getDefaultModelObject() != null))
