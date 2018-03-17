@@ -8,6 +8,7 @@ import be.superjoran.common.link.LinkBuilderFactory;
 import be.superjoran.common.model.DomainObjectListModel;
 import be.superjoran.mint.domain.Category;
 import be.superjoran.mint.domain.Statement;
+import be.superjoran.mint.domain.searchresults.StatementSearchCriteria;
 import be.superjoran.mint.services.CategoryService;
 import be.superjoran.mint.services.StatementService;
 import org.apache.wicket.MarkupContainer;
@@ -43,7 +44,7 @@ public class StatementListPanel extends GenericPanel<List<Statement>> {
     private final IModel<List<Statement>> selectedStatementsModel;
     private final IModel<Category> chosenCategoryModel;
     private final IModel<List<Statement>> filteredStatementsModel;
-    private final IModel<String> searchModel;
+    private final IModel<StatementSearchCriteria> searchModel;
     private final SerializableBiConsumer<AjaxRequestTarget, AjaxSubmitLink> afterSaveFunction;
 
     public StatementListPanel(String id, IModel<List<Statement>> model) {
@@ -55,7 +56,7 @@ public class StatementListPanel extends GenericPanel<List<Statement>> {
         super(id, model);
         this.selectedStatementsModel = new ListModel<>(new ArrayList<>());
         this.chosenCategoryModel = new Model<>(null);
-        this.searchModel = new Model<>("");
+        this.searchModel = new Model<>(new StatementSearchCriteria());
         this.filteredStatementsModel = new FilteredStatementsModel(model, this.searchModel);
         this.afterSaveFunction = afterSaveFunction;
     }
