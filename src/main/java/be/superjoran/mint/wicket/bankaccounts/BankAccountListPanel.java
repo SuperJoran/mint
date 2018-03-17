@@ -1,5 +1,6 @@
 package be.superjoran.mint.wicket.bankaccounts;
 
+import be.superjoran.common.IModelVisibilityBehavior;
 import be.superjoran.common.datatable.DataTableBuilderFactory;
 import be.superjoran.common.link.LinkBuilderFactory;
 import be.superjoran.common.model.DomainObjectListModel;
@@ -19,6 +20,7 @@ import org.apache.wicket.model.Model;
 import org.apache.wicket.model.ResourceModel;
 import org.apache.wicket.spring.injection.annot.SpringBean;
 
+import java.util.List;
 import java.util.stream.Collectors;
 
 public class BankAccountListPanel extends GenericPanel<Person> {
@@ -55,14 +57,17 @@ public class BankAccountListPanel extends GenericPanel<Person> {
         protected void populateItem(ListItem<Bank> item) {
             item.add(new Label("name", item.getModel()));
 
+            IModel<List<BankAccount>> listModel = LambdaModel.of(BankAccountListPanel.this.bankAccountListModel, list -> list.stream()
+                    .filter(ba -> ba.getBank() == item.getModelObject())
+                    .collect(Collectors.toList()));
+
+            item.add(new IModelVisibilityBehavior<>(listModel, list -> !list.isEmpty()));
+
             DataTableBuilderFactory.<BankAccount, String>simple()
                     .addColumn(new LambdaColumn<>(new ResourceModel("name"), BankAccount::getName))
                     .addColumn(new LambdaColumn<>(new ResourceModel("number"), BankAccount::getNumber))
                     .addColumn(new LambdaColumn<>(new ResourceModel("balance"), BankAccount::getBalance))
-                    .attach(item, "dataTable", LambdaModel.of(BankAccountListPanel.this.bankAccountListModel, list -> list.stream()
-                            .filter(ba -> ba.getBank() == item.getModelObject())
-                            .collect(Collectors.toList()))
-                    );
+                    .attach(item, "dataTable", listModel);
         }
     }
 }
