@@ -27,6 +27,8 @@ public class CsvServiceImplTest {
     private BankAccountService bankAccountService;
     @Mock
     private StatementService statementService;
+    @Mock
+    private DestinationCategoryService destinationCategoryService;
 
     @Test
     public void identifyBankAccount_BELFIUS() {
@@ -70,6 +72,6 @@ public class CsvServiceImplTest {
     }
 
     private CsvService getService() {
-        return new CsvServiceImpl(this.bankAccountService, statementService);
+        return new CsvServiceImpl(this.bankAccountService, this.statementService, this.destinationCategoryService);
     }
 }

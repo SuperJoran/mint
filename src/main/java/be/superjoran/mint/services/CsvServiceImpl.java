@@ -46,10 +46,12 @@ public class CsvServiceImpl implements CsvService {
 
     private final BankAccountService bankAccountService;
     private final StatementService statementService;
+    private final DestinationCategoryService destinationCategoryService;
 
-    public CsvServiceImpl(BankAccountService bankAccountService, StatementService statementService) {
+    public CsvServiceImpl(BankAccountService bankAccountService, StatementService statementService, DestinationCategoryService destinationCategoryService) {
         this.bankAccountService = bankAccountService;
         this.statementService = statementService;
+        this.destinationCategoryService = destinationCategoryService;
     }
 
     private static final Map<Bank, CsvOptions> SUPPORTED_BANKS_OPTIONS = new EnumMap<>(Bank.class);
@@ -110,9 +112,12 @@ public class CsvServiceImpl implements CsvService {
     public Iterable<Statement> uploadCSVFiles(@NotNull @Valid List<CsvFile> files, @NotNull Person person) {
         this.persistBankAccounts(files, person);
 
-        return this.statementService.save(files.stream()
+        Iterable<Statement> result = this.statementService.save(files.stream()
                 .flatMap(f -> this.uploadCsv(f, SUPPORTED_BANKS_OPTIONS.get(f.getBankAccount().getBank())).stream())
                 .collect(Collectors.toList()));
+
+        this.destinationCategoryService.assignInternalCategory(person);
+        return result;
     }
 
     private void persistBankAccounts(@Valid @NotNull List<CsvFile> files, @NotNull Person person) {
@@ -147,7 +152,7 @@ public class CsvServiceImpl implements CsvService {
 
                         BigDecimal amount = new BigDecimal(PATTERN.matcher(bedragString).replaceAll(Matcher.quoteReplacement(".")));
                         LocalDate date = LocalDate.parse(this.getValueFromStringArrayAtPosition(row, options.getRowNumberDate()), DateTimeFormatter.ofPattern(options.getDatePattern()));
-                        String toAccount = StringUtils.replace(this.getValueFromStringArrayAtPosition(row, options.getRowNumberToAccount()), " ", "");
+                        String toAccount = this.getValueFromStringArrayAtPosition(row, options.getRowNumberToAccount());
 
                         Statement statement = new Statement(csvFile.getBankAccount(), toAccount, amount, date);
 

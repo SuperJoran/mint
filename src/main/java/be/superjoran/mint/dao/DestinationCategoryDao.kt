@@ -8,4 +8,6 @@ interface DestinationCategoryDao {
     fun assignCategoriesAutomatically(personUuid: String)
 
     fun findNumberOfStatementsThatCanBeAssigned(personUuid: String): Int
+
+    fun assignInternalCategory(ownerUuid: String)
 }

@@ -28,4 +28,26 @@ class DestinationCategoryDaoImpl(private val jdbcTemplate: JdbcTemplate) : Desti
         val sql = "SELECT c.destinationaccount_number AS destinationAccountNumber, c.category_uuid AS categoryUuid FROM V_DESTINATION_CATEGORY c"
         return this.jdbcTemplate.query(sql, BeanPropertyRowMapper(DestinationCategory::class.java))
     }
+
+    override fun assignInternalCategory(ownerUuid: String) {
+        val sql = "UPDATE t_statement\n" +
+                "SET category_uuid = (SELECT cat.uuid\n" +
+                "                     FROM t_category cat\n" +
+                "                     WHERE cat.name = 'Internal')\n" +
+                "WHERE uuid IN (WITH personalAccountNumbers AS (SELECT ba.number\n" +
+                "                                               FROM t_bankaccount ba\n" +
+                "                                               WHERE ba.owner_uuid = ?),\n" +
+                "    personalAccountNumbers_asIng AS (SELECT iban_to_ing_number(ba.number)\n" +
+                "                                     FROM t_bankaccount ba\n" +
+                "                                     WHERE ba.owner_uuid = ?)\n" +
+                "SELECT s.uuid\n" +
+                "FROM t_statement s\n" +
+                "  INNER JOIN t_bankaccount ba ON ba.owner_uuid = ?\n" +
+                "WHERE s.destinationaccount_number IN (SELECT *\n" +
+                "                                      FROM personalAccountNumbers_asIng)\n" +
+                "      OR s.destinationaccount_number IN (SELECT *\n" +
+                "                                         FROM personalAccountNumbers))"
+        this.jdbcTemplate.update(sql, ownerUuid, ownerUuid, ownerUuid)
+
+    }
 }

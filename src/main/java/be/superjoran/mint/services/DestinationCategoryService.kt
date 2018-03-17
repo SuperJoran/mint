@@ -9,4 +9,6 @@ interface DestinationCategoryService {
     fun assignCategoriesAutomatically(owner: Person)
 
     fun findNumberOfStatementsThatCanBeAssigned(owner: Person): Int
+
+    fun assignInternalCategory(owner: Person)
 }

@@ -7,6 +7,11 @@ import org.springframework.stereotype.Service
 
 @Service
 class DestinationCategoryServiceImpl(private val dao: DestinationCategoryDao) : DestinationCategoryService {
+
+    override fun assignInternalCategory(owner: Person) {
+        this.dao.assignInternalCategory(owner.uuid!!)
+    }
+
     override fun assignCategoriesAutomatically(owner: Person) {
         this.dao.assignCategoriesAutomatically(owner.uuid!!)
     }
