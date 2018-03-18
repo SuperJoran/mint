@@ -10,4 +10,8 @@ class CategoryExpenseServiceImpl(private val categoryExpenseDao: CategoryExpense
     override fun findCategoryExpensesPerYearByOwner(owner: Person): List<CategoryExpense> {
         return this.categoryExpenseDao.findCategoryExpensesPerYearByOwner(owner.uuid!!)
     }
+
+    override fun findCategoryExpensesPerMonthByOwner(owner: Person): List<CategoryExpense> {
+        return this.categoryExpenseDao.findCategoryExpensesPerMonthByOwner(owner.uuid!!)
+    }
 }

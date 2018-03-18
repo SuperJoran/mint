@@ -9,13 +9,13 @@ import org.apache.wicket.spring.injection.annot.SpringBean;
 
 import java.util.List;
 
-public class CategoryExpenseListModel extends LoadableListModel<CategoryExpense> {
+public class CategoryExpensePerYearListModel extends LoadableListModel<CategoryExpense> {
 
     private final IModel<Person> personIModel;
     @SpringBean
     private CategoryExpenseService categoryExpenseService;
 
-    public CategoryExpenseListModel(IModel<Person> personIModel) {
+    public CategoryExpensePerYearListModel(IModel<Person> personIModel) {
         this.personIModel = personIModel;
     }
 

@@ -23,7 +23,7 @@ class CategoryExpenseDaoImpl(private val jdbcTemplate: JdbcTemplate) : CategoryE
         return this.jdbcTemplate.query(sql, BeanPropertyRowMapper(CategoryExpense::class.java), ownerUuid)
     }
 
-    fun findCategoryExpensesPerMonthByOwner(ownerUuid: String): List<CategoryExpense> {
+    override fun findCategoryExpensesPerMonthByOwner(ownerUuid: String): List<CategoryExpense> {
         val sql = "SELECT\n" +
                 "  cat.name                   AS category,\n" +
                 "  sum(s.amount)              AS sum,\n" +
