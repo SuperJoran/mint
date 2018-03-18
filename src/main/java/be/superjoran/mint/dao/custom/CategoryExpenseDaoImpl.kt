@@ -9,13 +9,31 @@ import org.springframework.stereotype.Repository
 @Repository
 class CategoryExpenseDaoImpl(private val jdbcTemplate: JdbcTemplate) : CategoryExpenseDao {
     override fun findCategoryExpensesPerYearByOwner(ownerUuid: String): List<CategoryExpense> {
-        val sql = "SELECT cat.name as category, sum(s.amount) as sum, date_part('year', s.date) as year\n" +
+        val sql = "SELECT\n" +
+                "  cat.name                   AS category,\n" +
+                "  sum(s.amount)              AS sum,\n" +
+                "  date_trunc('year', s.date) as simpleDate\n" +
                 "FROM t_statement s\n" +
                 "  INNER JOIN t_bankaccount tb ON s.originatingaccount_uuid = tb.uuid\n" +
-                "  LEFT OUTER JOIN  t_category cat on s.category_uuid = cat.uuid\n" +
+                "  LEFT OUTER JOIN t_category cat ON s.category_uuid = cat.uuid\n" +
                 "  WHERE owner_uuid = ?\n" +
-                "GROUP BY cat.name, s.category_uuid, date_part('year', s.date)\n" +
-                "ORDER BY year DESC , category"
+                "GROUP BY cat.name, s.category_uuid, date_trunc('year', s.date)\n" +
+                "ORDER BY category, simpleDate DESC"
+
+        return this.jdbcTemplate.query(sql, BeanPropertyRowMapper(CategoryExpense::class.java), ownerUuid)
+    }
+
+    fun findCategoryExpensesPerMonthByOwner(ownerUuid: String): List<CategoryExpense> {
+        val sql = "SELECT\n" +
+                "  cat.name                   AS category,\n" +
+                "  sum(s.amount)              AS sum,\n" +
+                "  date_trunc('month', s.date) as simpleDate\n" +
+                "FROM t_statement s\n" +
+                "  INNER JOIN t_bankaccount tb ON s.originatingaccount_uuid = tb.uuid\n" +
+                "  LEFT OUTER JOIN t_category cat ON s.category_uuid = cat.uuid\n" +
+                "  WHERE owner_uuid = ?\n" +
+                "GROUP BY cat.name, s.category_uuid, date_trunc('month', s.date)\n" +
+                "ORDER BY category, simpleDate DESC"
 
         return this.jdbcTemplate.query(sql, BeanPropertyRowMapper(CategoryExpense::class.java), ownerUuid)
     }

@@ -8,6 +8,7 @@ import org.apache.wicket.markup.html.panel.GenericPanel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.ResourceModel;
 
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 public class CategoryExpensePanel extends GenericPanel<Person> {
@@ -25,7 +26,7 @@ public class CategoryExpensePanel extends GenericPanel<Person> {
 
         DataTableBuilderFactory.<CategoryExpense, String>simple()
                 .addColumn(new LambdaColumn<>(new ResourceModel("category"), CategoryExpense::getCategory))
-                .addColumn(new LambdaColumn<>(new ResourceModel("year"), CategoryExpense::getYear))
+                .addColumn(new LambdaColumn<>(new ResourceModel("year"), categoryExpense -> categoryExpense.getSimpleDate().format(DateTimeFormatter.ofPattern("yyyy"))))
                 .addColumn(new LambdaColumn<>(new ResourceModel("sum"), CategoryExpense::getSum))
                 .attach(this, "datatable", this.categoryExpenseListModel);
     }
